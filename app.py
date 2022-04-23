@@ -21,9 +21,12 @@ def after_request(response):
 def index():
     return render_template('index.html')
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template('register.html')
+    if request.method == "POST":
+        return render_template('index.html')
+    else:
+        return render_template('register.html')
 
 @app.route('/login')
 def login():

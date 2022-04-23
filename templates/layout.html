@@ -11,15 +11,15 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-md border">
-      <ul class="nav nav-tabs me-auto mt-2">
+      <ul class="nav me-auto mt-2">
         <li class="nav-item">
-          <a class="nav-link active" href="/">Home</a>
+          <a class="nav-link" href="/">Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/mycloset">My Closet</a>
         </li>
       </ul>
-      <ul class="nav nav-tabs ms-auto mt-2">
+      <ul class="nav ms-auto mt-2">
         {% if session["user_id"] %}
           <li>
             <a class="nav-link" href="/logout">Log Out</a>
@@ -30,8 +30,10 @@
         {% endif %}
       </ul>
     </nav>
-    {% block main %}
-    {% endblock %}
+    <main class="container-fluid py-5 text-center">
+      {% block main %}
+      {% endblock %}
+    </main>
     <footer>
 
     </footer>
