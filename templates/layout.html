@@ -10,32 +10,30 @@
 
   </head>
   <body>
-    <div class="container">
-      <nav>
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" href="/index">Home</a>
+    <nav class="navbar navbar-expand-md border">
+      <ul class="nav nav-tabs me-auto mt-2">
+        <li class="nav-item">
+          <a class="nav-link active" href="/index">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/mycloset">My Closet</a>
+        </li>
+      </ul>
+      <ul class="nav nav-tabs ms-auto mt-2">
+        {% if session["user_id"] %}
+          <li>
+            <a class="nav-link" href="/logout">Log Out</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">My Closet</a>
-          </li>
-        </ul>
-        <ul class="nav nav-tabs">
-          {% if session["user_id"] %}
-            <li>
-              <a class="nav-link" href="/logout">Log Out</a>
-            </li>
-          {% else %}
-            <li><a class="nav-link" href="/register">Register</a></li>
-            <li><a class="nav-link" href="/login">Log In</a></li>
-          {% endif %}
-        </ul>
-      </nav>
-      {% block main %}
-      {% endblock %}
-      <footer>
+        {% else %}
+          <li><a class="nav-link" href="/register">Register</a></li>
+          <li><a class="nav-link" href="/login">Log In</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% block main %}
+    {% endblock %}
+    <footer>
 
-      </footer>
-    </div>
+    </footer>
   </body>
 </html>
