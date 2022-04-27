@@ -73,6 +73,7 @@ def register():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
+    
     # Forget any user_id
     session.clear()
 
@@ -110,4 +111,14 @@ def login():
 
 @app.route('/mycloset')
 def mycloset():
+
     return render_template('mycloset.html')
+
+@app.route('/logout')
+def logout():
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect to home
+    return redirect('/')
