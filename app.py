@@ -24,10 +24,6 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# Make Database Connection
-# con = sqlite3.connect('outfits.db')
-# db = con.cursor()
-
 # Routes
 @app.route("/")
 def index():
@@ -73,7 +69,7 @@ def register():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    
+
     # Forget any user_id
     session.clear()
 
@@ -111,8 +107,30 @@ def login():
 
 @app.route('/mycloset')
 def mycloset():
+    # Needs loginrequired decoration
+    # Get all top-level categories from closets database, submit to be listed as list options
+    # Get all items for each category, submit to be listed under each category
+    con = sqlite3.connect('outfits.db')
+    con.row_factory = sqlite3.Row
+    db = con.cursor()
+    # Join clothing and closets on clothingID to only select categories where clothing.userID = session["user_id"], HAVING clothingID?
+    db.execute('SELECT clothing.category, clothing.itemname FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ? GROUP BY category', (session['user_id'], ))
+    # db.execute('SELECT category FROM clothing GROUP BY category') # returning list of tuples
+    info = db.fetchall()
+    categories = []
+    for i in range(len(info)):
+        categories.append(info[i]["category"])
+    items = db.execute('SELECT * FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ?', (session['user_id'], ))
+    items = items.fetchall()
+    notowned = db.execute('select * from clothing where id NOT IN (select itemid from closets where userid = ?)', (session['user_id'], ))
+        # clothingID NOT IN (select * from closet WHERE userid = session["user_id"])
+    notowned = notowned.fetchall()
+    return render_template('mycloset.html', categories=categories, items=items, notowned=notowned)
 
-    return render_template('mycloset.html')
+@app.route('/myclosetlist')
+def myclosetlist():
+
+    return render_template('myclosetlist.html')
 
 @app.route('/logout')
 def logout():
