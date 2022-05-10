@@ -8,6 +8,7 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from helpers import login_required
 app = Flask(__name__)
 
 # Set configuration options
@@ -127,10 +128,23 @@ def mycloset():
     notowned = notowned.fetchall()
     return render_template('mycloset.html', categories=categories, items=items, notowned=notowned)
 
-@app.route('/myclosetlist')
-def myclosetlist():
+@app.route('/addtocloset', methods=['GET', 'POST'])
+def addtocloset():
+    # needs loginrequired
 
-    return render_template('myclosetlist.html')
+    # Add existing clothing option to user's closet
+    # How do I get which option user clicked on?
+    if request.method == "POST":
+        options = request.form.getlist('option')
+        con = sqlite3.connect('outfits.db')
+        db = con.cursor()
+        for i in range(len(options)):
+            db.execute('INSERT INTO closets VALUES (?,?)', (options[i], session['user_id']))
+        con.commit()
+        con.close()
+        return redirect('/mycloset')
+    else:
+        return render_template('mycloset.html')
 
 @app.route('/logout')
 def logout():

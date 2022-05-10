@@ -54,16 +54,24 @@
   {% endblock %} #}
   <div>
     Need to add a new item to your closet?
-    <!-- display scrollable table of all remaining clothing options for user to choose from, with search bar that filters the table -->
+    <!-- turn this into a form, each option has a radio option, and there is a submit type button below the scrollable list
+    display scrollable table of all remaining clothing options for user to choose from, with search bar that filters the table -->
+    <br><input type="search">
     <ul class="list-group list-group-flush">
+      <form action="/addtocloset" method="POST">
       {% for row in notowned %}
         <li class="list-group-item d-flex justify-content-between align-items-start">
             <div class="ms-2 me-auto">
-              <div class="fw-bold">{{ row.itemname }}</div>
-              {{ row.category }}
+              <input type="checkbox" id="{{row.id}}" name="option" value="{{row.id}}">
+              <label for="{{row.id}}">
+                <div class="fw-bold">{{ row.itemname }}</div>
+                {{ row.category }}
+              </label>
             </div>
         </li>
       {% endfor %}
+      <button class="btn btn-primary" type="submit">Add</button>
+      </form>
     </ul>
     <br><br>
   </div>
