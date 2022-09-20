@@ -2,14 +2,19 @@
 
 {% block main %}
   <div>
-    <p>Wear this today:</p>
+    Wear this today:
     <div>
-      Top
+      {{ item1.itemname }}
     </div>
-    {# if outfit.bottom #}
+    {% if item2.id == item1.id %}
+    
+    {% else %}
       <div>
-        Bottom
+        {{ item2.itemname }}
       </div>
-    {# endif #}
+    {% endif %}
+    <div>
+      {{ shoes.itemname }}
+    </div>
   </div>
 {% endblock %}
