@@ -8,6 +8,10 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from helpers import login_required, outfitpicker
+
+# When running from terminal: export FLASK_ENV=development
+# Configure application
 app = Flask(__name__)
 
 # Set configuration options
@@ -24,14 +28,34 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# Make Database Connection
-# con = sqlite3.connect('outfits.db')
-# db = con.cursor()
-
 # Routes
 @app.route("/")
+@login_required
 def index():
-    return render_template('index.html')
+
+    # Open database connection
+    con = sqlite3.connect('outfits.db')
+    con.row_factory = sqlite3.Row
+    db = con.cursor()
+
+    # Get categories
+    db.execute('SELECT clothing.category, clothing.itemname FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ? GROUP BY category', (session['user_id'], ))
+    info = db.fetchall()
+    categories = []
+    for i in range(len(info)):
+        categories.append(info[i]["category"])
+
+    # Get clothing
+    items = []
+    db.execute('SELECT * FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ?', (session['user_id'], ))
+    items = db.fetchall()
+    outfit = outfitpicker(items)
+    shoes = outfit[0]
+    item1 = outfit[1]
+    item2 = outfit[2]
+    # if outfit[0]:
+    #     return render_template('login.html')
+    return render_template('index.html', categories=categories, shoes=shoes, item1=item1, item2=item2)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -73,7 +97,7 @@ def register():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    
+
     # Forget any user_id
     session.clear()
 
@@ -110,9 +134,65 @@ def login():
         return render_template('login.html')
 
 @app.route('/mycloset')
+@login_required
 def mycloset():
+    # Get all top-level categories from closets database, submit to be listed as list options
 
-    return render_template('mycloset.html')
+    # Connect to DB
+    con = sqlite3.connect('outfits.db')
+    con.row_factory = sqlite3.Row
+    db = con.cursor()
+
+    # Get all categories
+    db.execute('SELECT category FROM clothing GROUP BY category')
+    temp1 = db.fetchall()
+    allcategories = []
+    for i in range(len(temp1)):
+        allcategories.append(temp1[i]['category'])
+
+    # Get user's categories
+    db.execute('SELECT clothing.category, clothing.itemname FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ? GROUP BY category', (session['user_id'], ))
+    info = db.fetchall()
+    usercategories = []
+    for i in range(len(info)):
+        usercategories.append(info[i]["category"])
+
+    # Get user's clothing items
+    items = db.execute('SELECT * FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ?', (session['user_id'], ))
+    items = items.fetchall()
+    notowned = db.execute('select * from clothing where id NOT IN (select itemid from closets where userid = ?)', (session['user_id'], ))
+    notowned = notowned.fetchall()
+
+    return render_template('mycloset.html', usercategories=usercategories, items=items, notowned=notowned, allcategories=allcategories)
+
+@app.route('/addtocloset', methods=['GET', 'POST'])
+@login_required
+def addtocloset():
+    # Add existing clothing option to user's closet
+    # How do I get which option user clicked on?
+    if request.method == "POST":
+        options = request.form.getlist('option')
+        con = sqlite3.connect('outfits.db')
+        db = con.cursor()
+        for i in range(len(options)):
+            db.execute('INSERT INTO closets VALUES (?,?)', (options[i], session['user_id']))
+        con.commit()
+        con.close()
+        return redirect('/mycloset')
+    else:
+        return render_template('mycloset.html')
+
+@app.route('/removefromcloset', methods=['POST'])
+@login_required
+def removefromcloset():
+    # Remove item from user's closet
+    item = request.form.get('item')
+    con = sqlite3.connect('outfits.db')
+    db = con.cursor()
+    db.execute('DELETE FROM closets WHERE itemid = ? AND userid = ?', (item, session['user_id']))
+    con.commit()
+    con.close()
+    return redirect('/mycloset')
 
 @app.route('/logout')
 def logout():

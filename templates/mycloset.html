@@ -1,5 +1,99 @@
 {% extends "layout.html" %}
 
 {% block main %}
-  <p>My Closet</p>
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    {% for item in usercategories %}
+      {% if loop.first %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="{{item}}-tab" data-bs-toggle="tab" data-bs-target="#{{item}}" type="button" role="tab" aria-controls="{{item}}" aria-selected="true">{{item}}</button>
+        </li>
+      {% else %}
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="{{item}}-tab" data-bs-toggle="tab" data-bs-target="#{{item}}" type="button" role="tab" aria-controls="{{item}}" aria-selected="false">{{item}}</button>
+      </li>
+      {% endif %}
+    {% endfor %}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="All-tab" data-bs-toggle="tab" data-bs-target="#All" type="button" role="tab" aria-controls="All" aria-selected="false">All</button>
+  </ul>
+
+  <div class="tab-content" id="myTabContent">
+    <form action="/removefromcloset" method="POST" id="remove"></form>
+    {% for category in usercategories %}
+      {% if loop.first %}
+        <div class="tab-pane fade show active" id="{{category}}" role="tabpanel" aria-labelledby="{{category}}-tab">
+      {% else %}
+        <div class="tab-pane fade" id="{{category}}" role="tabpanel" aria-labelledby="{{category}}-tab">
+      {% endif %}
+          <table>
+            {% for row in items %}
+              {% if row.category == category %}
+                <tr>
+                  <td></td>
+                  <td>{{row.itemname}}</td>
+                  <!-- <td>{{row.fabric}}</td> -->
+                  <td>{{row.category}}</td>
+                  <!-- <td>
+                    <input type="hidden" name="item" value="{{row.id}}" form="remove">
+                    <input type="submit" value="Remove" form="remove" formmethod="POST" formaction="/removefromcloset">
+                    <!--<button class="btn btn-danger" type="submit" form="remove" formmethod="POST">Remove</button>
+                  </td> -->
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </table>
+        </div>
+    {% endfor %}
+    <div class="tab-pane fade" id="All" role="tabpanel" aria-labelledby="All-tab">
+      <table>
+        {% for row in items %}
+          <input type="hidden" name="{{row.id}}">
+          <tr>
+            <td>{{row.itemname}}</td>
+            <!-- <td>{{row.fabric}}</td> -->
+            <td>{{row.category}}</td>
+            <!-- <td><button class="btn btn-danger" type="submit" form="remove">Remove</button></td> -->
+          </tr>
+        {% endfor %}
+      </table>
+
+    </div>
+  </div>
+  {# }{% block content %}
+  {% endblock %} #}
+  <div>
+    Need to add a new item to your closet?
+    <!-- turn this into a form, each option has a radio option, and there is a submit type button below the scrollable list
+    display scrollable table of all remaining clothing options for user to choose from, with search bar that filters the table -->
+    <br><input type="search">
+    <ul class="list-group list-group-flush">
+      <form action="/addtocloset" method="POST">
+      {% for row in notowned %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <input type="checkbox" id="{{row.id}}" name="option" value="{{row.id}}">
+              <label for="{{row.id}}">
+                <div class="fw-bold">{{ row.itemname }}</div>
+                {{ row.category }}
+              </label>
+            </div>
+        </li>
+      {% endfor %}
+      <button class="btn btn-primary" type="submit">Add</button>
+      </form>
+    </ul>
+    <br><br>
+  </div>
+  <div>
+    Add an option not listed:
+    <form action="/addoption">
+      <input type="text" name="item" placeholder="Item Name">
+      <select name="category" required>
+        {% for item in allcategories %}
+          <option value="{{item}}">{{item}}</option>
+        {% endfor %}
+      </select>
+      <input type="text" name="fabric" placeholder="Fabric">
+      <button class="btn btn-primary" type="submit">Add Option</button>
+  </div>
 {% endblock %}
