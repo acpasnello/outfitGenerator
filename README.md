@@ -6,13 +6,8 @@ This is a project meant to help me come up with an outfit when I can't decide wh
 ### Database Info
 Three Tables:
 - Users
+  - Columns: ID, username, hash
 - Clothing Options
+  - Columns: ID, itemName, category, fabric
 - Closet
-
-With these columns:
-- Users
-  - ID, username, hash
-- Clothing Options
-  - ID, itemName, category, fabric
-- Closet
-  - userid, clothingid
+  - Columns: userid, clothingid
