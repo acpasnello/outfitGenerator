@@ -11,6 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, outfitpicker
 
 # When running from terminal: export FLASK_ENV=development
+
 # Configure application
 app = Flask(__name__)
 
@@ -49,13 +50,18 @@ def index():
     items = []
     db.execute('SELECT * FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ?', (session['user_id'], ))
     items = db.fetchall()
-    outfit = outfitpicker(items)
-    shoes = outfit[0]
-    item1 = outfit[1]
-    item2 = outfit[2]
-    # if outfit[0]:
-    #     return render_template('login.html')
-    return render_template('index.html', categories=categories, shoes=shoes, item1=item1, item2=item2)
+    if items:
+        outfit = outfitpicker(items)
+        shoes = outfit[0]
+        item1 = outfit[1]
+        item2 = outfit[2]
+        # if outfit[0]:
+        #     return render_template('login.html')
+        return render_template('index.html', categories=categories, shoes=shoes, item1=item1, item2=item2)
+    else:
+        # Had to redirect to closet if user had no items, like a new user
+        # need a better way to handle this
+        return render_template('mycloset.html')
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -112,17 +118,22 @@ def login():
 
         # Check username not taken
         con = sqlite3.connect('outfits.db')
+        con.row_factory = sqlite3.Row
         db = con.cursor()
-        for row in db.execute('SELECT * FROM users WHERE username = ?', (request.form.get('username'),)):
-            id, user, hash = row
-
+        #for row in db.execute('SELECT * FROM users WHERE username = ?', (request.form.get('username'),)):
+            #id, user, hash = row
+        data = db.execute('SELECT * FROM users WHERE username = ?', (request.form.get('username'),))
+        rows = data.fetchall()
+        id = rows[0][0]
+        user = rows[0][1]
+        hash = rows[0][2]
         # Ensure username exists and password is correct
         if user == None:
             return render_template('login.html')
 
         if user != request.form.get('username') or not check_password_hash(hash, request.form.get('password')):
             # TODO: pop-up saying username taken
-            return render_template('login.html')
+            return render_template('register.html')
         con.commit()
         con.close()
         # Remember which user has logged in
