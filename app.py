@@ -93,7 +93,7 @@ def register():
 
         # Store new user in Database
         username = request.form.get('username')
-        passwordHash = generate_password_hash(request.form.get('password'), method='sha1', salt_length=8)
+        passwordHash = generate_password_hash(request.form.get('password'), method='scrypt:32768:8:1', salt_length=16)
         db.execute('INSERT INTO users (username, hash) VALUES (?, ?)', (username, passwordHash))
         con.commit()
         con.close()
