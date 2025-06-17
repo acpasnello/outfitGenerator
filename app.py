@@ -19,6 +19,7 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 Session(app)
 
 # @app.after_request
@@ -220,3 +221,14 @@ def logout():
 
     # Redirect to home
     return redirect('/')
+
+@app.route('/additem', methods=['POST'])
+def additem():
+    if request.method != "POST":
+        return redirect(url_for('mycloset'))
+    # Save new clothing item to clothing database
+
+    # Add new item to user's closet
+
+    # Return user to their closet page
+    return redirect(url_for('mycloset'))

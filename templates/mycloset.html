@@ -36,7 +36,7 @@
                   <td></td>
                   <td>{{row.itemname}}</td>
                   <!-- <td>{{row.fabric}}</td> -->
-                  <td>{{row.category}}</td>
+                  <td class="closet-item-category">{{row.category}}</td>
                   <!-- <td>
                     <input type="hidden" name="item" value="{{row.id}}" form="remove">
                     <input type="submit" value="Remove" form="remove" formmethod="POST" formaction="/removefromcloset">
@@ -55,7 +55,7 @@
           <tr>
             <td>{{row.itemname}}</td>
             <!-- <td>{{row.fabric}}</td> -->
-            <td>{{row.category}}</td>
+            <td class="closet-item-category">{{row.category}}</td>
             <!-- <td><button class="btn btn-danger" type="submit" form="remove">Remove</button></td> -->
           </tr>
         {% endfor %}

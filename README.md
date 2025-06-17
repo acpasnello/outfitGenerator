@@ -7,7 +7,7 @@ This is a project meant to help me come up with an outfit when I can't decide wh
 Three Tables:
 - Users
   - Columns: ID, username, hash
-- Clothing Options
-  - Columns: ID, itemName, category, fabric
-- Closet
+- Clothing
+  - Columns: ID, itemname, category, needspair
+- Closets
   - Columns: userid, clothingid

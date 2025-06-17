@@ -4,6 +4,7 @@ from random import randrange
 
 from flask import redirect, render_template, request, session, url_for
 from functools import wraps
+from werkzeug.utils import secure_filename
 
 def login_required(f):
     @wraps(f)
@@ -70,3 +71,10 @@ def outfitpicker(items):
     outfit = [shoes, item1, item2]
 
     return outfit
+
+def saveImage(file):
+    # safely save image in file system
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    # return full filepath to save in database
+    return os.path.join(app.config['UPLOAD_FOLDER'], filename)
