@@ -3,7 +3,7 @@ import sqlite3
 import click
 import cs50
 
-from flask import Flask, redirect, render_template, request, session, current_app, g
+from flask import Flask, redirect, render_template, request, session, current_app, g, url_for
 from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -21,36 +21,40 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-@app.after_request
-def after_request(response):
-    """Ensure responses aren't cached"""
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Expires"] = 0
-    response.headers["Pragma"] = "no-cache"
-    return response
+# @app.after_request
+# def after_request(response):
+#     """Ensure responses aren't cached"""
+#     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+#     response.headers["Expires"] = 0
+#     response.headers["Pragma"] = "no-cache"
+#     return response
 
 # Routes
 @app.route("/")
 @login_required
 def index():
-
+    print('index')
     # Open database connection
     con = sqlite3.connect('outfits.db')
+    print(con)
     con.row_factory = sqlite3.Row
     db = con.cursor()
-
+    print(db)
     # Get categories
     db.execute('SELECT clothing.category, clothing.itemname FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ? GROUP BY category', (session['user_id'], ))
     info = db.fetchall()
+    print(info)
     categories = []
     for i in range(len(info)):
+        print(info[i]["category"])
         categories.append(info[i]["category"])
 
     # Get clothing
     items = []
     db.execute('SELECT * FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ?', (session['user_id'], ))
     items = db.fetchall()
-    if items:
+    print(items)
+    if items and len(items) > 3:
         outfit = outfitpicker(items)
         shoes = outfit[0]
         item1 = outfit[1]
@@ -61,7 +65,7 @@ def index():
     else:
         # Had to redirect to closet if user had no items, like a new user
         # need a better way to handle this
-        return render_template('mycloset.html')
+        return redirect(url_for('mycloset'))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -127,19 +131,22 @@ def login():
         id = rows[0][0]
         user = rows[0][1]
         hash = rows[0][2]
+        print(id, user)
         # Ensure username exists and password is correct
         if user == None:
+            print('user=none')
             return render_template('login.html')
 
         if user != request.form.get('username') or not check_password_hash(hash, request.form.get('password')):
             # TODO: pop-up saying username taken
             return render_template('register.html')
-        con.commit()
+        # con.commit()
         con.close()
         # Remember which user has logged in
         session['user_id'] = id
+        print(session)
         # Redirect to My Closet Page
-        return redirect('/')
+        return redirect(url_for('index'))
 
     else:
         return render_template('login.html')

@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 
+{% block nav_closet_class %}
+  class="nav-link active"
+{% endblock %}
+
 {% block main %}
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     {% for item in usercategories %}
