@@ -8,7 +8,7 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import login_required, outfitpicker
+from helpers import login_required, outfitpicker, saveImage, dbInsert, dbSelect
 
 # When running from terminal: export FLASK_ENV=development
 
@@ -226,8 +226,19 @@ def logout():
 def additem():
     if request.method != "POST":
         return redirect(url_for('mycloset'))
+    
+    if 'clothingImage' in request.files['clothingImage']:
+        print('clothingImage')
+        file = request.files['clothingImage']
+        if file.filename == '':
+            path = None
+        else:
+            path = saveImage(file)
+        print(path)
     # Save new clothing item to clothing database
-
+    query = 'INSERT INTO clothing (itemname, category, imagePath) VALUES ()'
+    values = (request.form.get('item'), request.form.get('category'), path)
+    dbInsert(query, values)
     # Add new item to user's closet
 
     # Return user to their closet page

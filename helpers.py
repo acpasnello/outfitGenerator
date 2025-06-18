@@ -1,5 +1,6 @@
 import os
 import urllib.parse
+import sqlite3
 from random import randrange
 
 from flask import redirect, render_template, request, session, url_for
@@ -78,3 +79,27 @@ def saveImage(file):
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     # return full filepath to save in database
     return os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+def getDbConnection(withRow=True):
+    # Open database connection and return cursor, option to return indexed and named access to columns
+    con = sqlite3.connect('outfits.db')
+    if withRow:
+        con.row_factory = sqlite3.Row
+    # cur = con.cursor()
+
+    return con
+
+def dbInsert(query, parameters):
+    db = getDbConnection(False)
+    cur = db.cursor()
+    cur.execute(query, parameters)
+    db.commit()
+    db.close()
+
+def dbSelect(query, parameters=None):
+    db = getDbConnection(True)
+    cur = db.cursor()
+    data = cur.execute(query).fetchall()
+    db.close()
+    return data
+    

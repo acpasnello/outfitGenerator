@@ -90,14 +90,19 @@
   </div>
   <div>
     Add an option not listed:
-    <form action="/addoption">
+    <form action="/additem" method="POST">
+      <label for="item">Item</label>
       <input type="text" name="item" placeholder="Item Name">
+      <label for="category">Item Type</label>
       <select name="category" required>
         {% for item in allcategories %}
           <option value="{{item}}">{{item}}</option>
         {% endfor %}
       </select>
+      <label for="fabric">Fabric</label>
       <input type="text" name="fabric" placeholder="Fabric">
+      <label for="clothingImage">Image</label>
+      <input type="file" name="clothingImage" id="clothingImage">
       <button class="btn btn-primary" type="submit">Add Option</button>
   </div>
 {% endblock %}
