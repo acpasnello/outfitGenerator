@@ -6,6 +6,7 @@ from random import randrange
 from flask import redirect, render_template, request, session, url_for
 from functools import wraps
 from werkzeug.utils import secure_filename
+from flask import current_app
 
 def login_required(f):
     @wraps(f)
@@ -76,9 +77,9 @@ def outfitpicker(items):
 def saveImage(file):
     # safely save image in file system
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
     # return full filepath to save in database
-    return os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    return os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
 
 def getDbConnection(withRow=True):
     # Open database connection and return cursor, option to return indexed and named access to columns
@@ -89,17 +90,20 @@ def getDbConnection(withRow=True):
 
     return con
 
-def dbInsert(query, parameters):
+def dbInsert(query, values):
     db = getDbConnection(False)
     cur = db.cursor()
-    cur.execute(query, parameters)
+    cur.execute(query, values)
+    rowId = cur.lastrowid
     db.commit()
     db.close()
 
-def dbSelect(query, parameters=None):
+    return rowId
+
+def dbSelect(query, values=None):
     db = getDbConnection(True)
     cur = db.cursor()
-    data = cur.execute(query).fetchall()
+    data = cur.execute(query, values).fetchall()
     db.close()
     return data
     

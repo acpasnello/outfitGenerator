@@ -37,6 +37,9 @@
                   <td>{{row.itemname}}</td>
                   <!-- <td>{{row.fabric}}</td> -->
                   <td class="closet-item-category">{{row.category}}</td>
+                  {% if row.imagePath %}
+                    <td><img src="{{row.imagePath}}" alt="{{row.itemname}} Image"></td>
+                  {% endif %}
                   <!-- <td>
                     <input type="hidden" name="item" value="{{row.id}}" form="remove">
                     <input type="submit" value="Remove" form="remove" formmethod="POST" formaction="/removefromcloset">
@@ -90,7 +93,7 @@
   </div>
   <div>
     Add an option not listed:
-    <form action="/additem" method="POST">
+    <form action="/additem" method="POST" enctype="multipart/form-data">
       <label for="item">Item</label>
       <input type="text" name="item" placeholder="Item Name">
       <label for="category">Item Type</label>

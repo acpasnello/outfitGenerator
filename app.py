@@ -227,7 +227,9 @@ def additem():
     if request.method != "POST":
         return redirect(url_for('mycloset'))
     
-    if 'clothingImage' in request.files['clothingImage']:
+    print(request.form, request.files)
+    path = None
+    if 'clothingImage' in request.files:
         print('clothingImage')
         file = request.files['clothingImage']
         if file.filename == '':
@@ -236,9 +238,11 @@ def additem():
             path = saveImage(file)
         print(path)
     # Save new clothing item to clothing database
-    query = 'INSERT INTO clothing (itemname, category, imagePath) VALUES ()'
-    values = (request.form.get('item'), request.form.get('category'), path)
-    dbInsert(query, values)
+    query = 'INSERT INTO clothing (itemname, category, imagePath) VALUES (?, ?, ?)'
+    values = (request.form.get('item'), request.form.get('category'), path,)
+    print(values)
+    rowId = dbInsert(query, values)
+    print(rowId)
     # Add new item to user's closet
 
     # Return user to their closet page
