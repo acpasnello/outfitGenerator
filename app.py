@@ -8,7 +8,7 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import login_required, outfitpicker, saveImage, dbInsert, dbSelect
+from helpers import login_required, outfitpicker, saveImage, dbInsert, dbSelect, addItemToCloset
 
 # When running from terminal: export FLASK_ENV=development
 
@@ -244,6 +244,6 @@ def additem():
     rowId = dbInsert(query, values)
     print(rowId)
     # Add new item to user's closet
-
+    addItemToCloset(rowId, session['user_id'])
     # Return user to their closet page
     return redirect(url_for('mycloset'))

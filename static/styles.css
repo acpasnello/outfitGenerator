@@ -2,3 +2,7 @@
 .closet-item-category {
     color: var(--bs-secondary-color);
 }
+
+.closetImage {
+    max-width: 200px;;
+}

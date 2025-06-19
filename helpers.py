@@ -106,4 +106,17 @@ def dbSelect(query, values=None):
     data = cur.execute(query, values).fetchall()
     db.close()
     return data
-    
+
+def addItemToCloset(itemId, userId):
+    query = 'INSERT INTO closets VALUES (?, ?)'
+    values = (itemId, userId,)
+    dbInsert(query, values)
+
+    return True
+
+def updateItem(itemId, itemName, category, imagePath):
+    query = 'UPDATE clothing SET itemname = ?, category = ?, imagePath = ? WHERE id = ?'
+    values = (itemName, category, imagePath, itemId,)
+    dbInsert(query, values)
+
+    return True
