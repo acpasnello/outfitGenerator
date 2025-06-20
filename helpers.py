@@ -86,7 +86,6 @@ def getDbConnection(withRow=True):
     con = sqlite3.connect('outfits.db')
     if withRow:
         con.row_factory = sqlite3.Row
-    # cur = con.cursor()
 
     return con
 
@@ -103,7 +102,10 @@ def dbInsert(query, values):
 def dbSelect(query, values=None):
     db = getDbConnection(True)
     cur = db.cursor()
-    data = cur.execute(query, values).fetchall()
+    if values:
+        data = cur.execute(query, values).fetchall()
+    else:
+        data = cur.execute(query).fetchall()
     db.close()
     return data
 

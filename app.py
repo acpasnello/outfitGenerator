@@ -156,33 +156,21 @@ def login():
 @login_required
 def mycloset():
     # Get all top-level categories from closets database, submit to be listed as list options
-
-    # Connect to DB
-    con = sqlite3.connect('outfits.db')
-    con.row_factory = sqlite3.Row
-    db = con.cursor()
-
-    # Get all categories
-    db.execute('SELECT category FROM clothing GROUP BY category')
-    temp1 = db.fetchall()
     allcategories = []
-    for i in range(len(temp1)):
-        allcategories.append(temp1[i]['category'])
+    for row in dbSelect('SELECT category FROM clothing GROUP BY category'):
+        allcategories.append(row['category'])
 
     # Get user's categories
-    db.execute('SELECT clothing.category, clothing.itemname FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ? GROUP BY category', (session['user_id'], ))
-    info = db.fetchall()
     usercategories = []
-    for i in range(len(info)):
-        usercategories.append(info[i]["category"])
+    for row in dbSelect('SELECT category FROM clothing WHERE userId = ? GROUP BY category', (session['user_id'], )):
+        usercategories.append(row['category'])
 
     # Get user's clothing items
-    items = db.execute('SELECT * FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ?', (session['user_id'], ))
-    items = items.fetchall()
-    notowned = db.execute('select * from clothing where id NOT IN (select itemid from closets where userid = ?)', (session['user_id'], ))
-    notowned = notowned.fetchall()
-
-    return render_template('mycloset.html', usercategories=usercategories, items=items, notowned=notowned, allcategories=allcategories)
+    items = dbSelect('SELECT * FROM clothing WHERE userId = ?', (session['user_id'], ))
+    # Get clothing items not owned by user
+    notOwned = dbSelect('select * from clothing WHERE userId != ?', (session['user_id'], ))
+    
+    return render_template('mycloset.html', usercategories=usercategories, items=items, notowned=notOwned, allcategories=allcategories)
 
 @app.route('/addtocloset', methods=['GET', 'POST'])
 @login_required
@@ -223,7 +211,7 @@ def logout():
     return redirect('/')
 
 @app.route('/additem', methods=['POST'])
-def additem():
+def addItem():
     if request.method != "POST":
         return redirect(url_for('mycloset'))
     
@@ -238,12 +226,12 @@ def additem():
             path = saveImage(file)
         print(path)
     # Save new clothing item to clothing database
-    query = 'INSERT INTO clothing (itemname, category, imagePath) VALUES (?, ?, ?)'
-    values = (request.form.get('item'), request.form.get('category'), path,)
+    query = 'INSERT INTO clothing (itemname, category, imagePath, userId) VALUES (?, ?, ?, ?)'
+    values = (request.form.get('item'), request.form.get('category'), path, session['user_id'],)
     print(values)
     rowId = dbInsert(query, values)
     print(rowId)
     # Add new item to user's closet
-    addItemToCloset(rowId, session['user_id'])
+    # addItemToCloset(rowId, session['user_id'])
     # Return user to their closet page
     return redirect(url_for('mycloset'))
