@@ -16,10 +16,30 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def pickOutfit(items, top=None, bottom=None, shoes=None):
+
+    while not (shoes and top and bottom):
+        rand = randrange(len(items))
+        if items[rand]['category'] == 'Shoes' and not shoes:
+            shoes = items[rand]
+            continue
+        if items[rand]['category'] == 'Top' and not top:
+            top = items[rand]
+            continue
+        if items[rand]['category'] == 'Bottom' and not bottom:
+            bottom = items[rand]
+            continue
+
+    outfit = {
+        'shoes': shoes,
+        'top': top,
+        'bottom': bottom
+    }
+
+    return outfit
 
 def outfitpicker(items):
-    # Does pickrand need to be submitted? No
-    # Initialize outfit variables, should they be empty lists, dicts, or None/Null?
+    # Initialize outfit variables
     shoes = {}
     item1 = {}
     item2 = {}
@@ -36,7 +56,6 @@ def outfitpicker(items):
         if not shoes:
             if items[pickrand]['category'] == 'Shoes':
                 shoes = items[pickrand]
-                # restart loop
                 continue
         if not item1:
             if items[pickrand]['category'] == 'Shoes':
