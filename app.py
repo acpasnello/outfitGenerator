@@ -8,7 +8,7 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import login_required, outfitpicker, saveImage, dbInsert, dbSelect, addItemToCloset
+from helpers import login_required, outfitpicker, saveImage, dbInsert, dbSelect, createItem
 
 # When running from terminal: export FLASK_ENV=development
 
@@ -172,22 +172,22 @@ def mycloset():
     
     return render_template('mycloset.html', usercategories=usercategories, items=items, notowned=notOwned, allcategories=allcategories)
 
-@app.route('/addtocloset', methods=['GET', 'POST'])
-@login_required
-def addtocloset():
-    # Add existing clothing option to user's closet
-    # How do I get which option user clicked on?
-    if request.method == "POST":
-        options = request.form.getlist('option')
-        con = sqlite3.connect('outfits.db')
-        db = con.cursor()
-        for i in range(len(options)):
-            db.execute('INSERT INTO closets VALUES (?,?)', (options[i], session['user_id']))
-        con.commit()
-        con.close()
-        return redirect('/mycloset')
-    else:
-        return render_template('mycloset.html')
+# @app.route('/addtocloset', methods=['GET', 'POST'])
+# @login_required
+# def addtocloset():
+#     # Add existing clothing option to user's closet
+#     # How do I get which option user clicked on?
+#     if request.method == "POST":
+#         options = request.form.getlist('option')
+#         con = sqlite3.connect('outfits.db')
+#         db = con.cursor()
+#         for i in range(len(options)):
+#             db.execute('INSERT INTO closets VALUES (?,?)', (options[i], session['user_id']))
+#         con.commit()
+#         con.close()
+#         return redirect('/mycloset')
+#     else:
+#         return render_template('mycloset.html')
 
 @app.route('/removefromcloset', methods=['POST'])
 @login_required
@@ -226,11 +226,14 @@ def addItem():
             path = saveImage(file)
         print(path)
     # Save new clothing item to clothing database
-    query = 'INSERT INTO clothing (itemname, category, imagePath, userId) VALUES (?, ?, ?, ?)'
-    values = (request.form.get('item'), request.form.get('category'), path, session['user_id'],)
-    print(values)
-    rowId = dbInsert(query, values)
+    # query = 'INSERT INTO clothing (itemname, category, imagePath, userId) VALUES (?, ?, ?, ?)'
+    # values = (request.form.get('item'), request.form.get('category'), path, session['user_id'],)
+    # print(values)
+    # rowId = dbInsert(query, values)
+    rowId = createItem(request.form.get('item'), request.form.get('category'), path, session['user_id'])
     print(rowId)
+
+
     # Add new item to user's closet
     # addItemToCloset(rowId, session['user_id'])
     # Return user to their closet page

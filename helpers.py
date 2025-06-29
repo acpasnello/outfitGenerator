@@ -128,12 +128,13 @@ def dbSelect(query, values=None):
     db.close()
     return data
 
-def addItemToCloset(itemId, userId):
-    query = 'INSERT INTO closets VALUES (?, ?)'
-    values = (itemId, userId,)
-    dbInsert(query, values)
 
-    return True
+def createItem(itemName, category, imagePath, userId):
+    query = 'INSERT INTO clothing (itemname, category, imagePath, userId) VALUES (?, ?, ?, ?)'
+    values = (itemName, category, imagePath, userId,)
+    id = dbInsert(query, values)
+
+    return id
 
 def updateItem(itemId, itemName, category, imagePath):
     query = 'UPDATE clothing SET itemname = ?, category = ?, imagePath = ? WHERE id = ?'
