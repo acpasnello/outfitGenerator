@@ -168,9 +168,9 @@ def mycloset():
     # Get user's clothing items
     items = dbSelect('SELECT * FROM clothing WHERE userId = ?', (session['user_id'], ))
     # Get clothing items not owned by user
-    notOwned = dbSelect('select * from clothing WHERE userId != ?', (session['user_id'], ))
+    # notOwned = dbSelect('select * from clothing WHERE userId != ?', (session['user_id'], ))
     
-    return render_template('mycloset.html', usercategories=usercategories, items=items, notowned=notOwned, allcategories=allcategories)
+    return render_template('mycloset.html', usercategories=usercategories, items=items, allcategories=allcategories)
 
 # @app.route('/addtocloset', methods=['GET', 'POST'])
 # @login_required
@@ -225,16 +225,9 @@ def addItem():
         else:
             path = saveImage(file)
         print(path)
-    # Save new clothing item to clothing database
-    # query = 'INSERT INTO clothing (itemname, category, imagePath, userId) VALUES (?, ?, ?, ?)'
-    # values = (request.form.get('item'), request.form.get('category'), path, session['user_id'],)
-    # print(values)
-    # rowId = dbInsert(query, values)
+  
     rowId = createItem(request.form.get('item'), request.form.get('category'), path, session['user_id'])
     print(rowId)
 
-
-    # Add new item to user's closet
-    # addItemToCloset(rowId, session['user_id'])
     # Return user to their closet page
     return redirect(url_for('mycloset'))
