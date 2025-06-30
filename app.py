@@ -226,7 +226,7 @@ def addItem():
             path = saveImage(file)
         print(path)
   
-    rowId = createItem(request.form.get('item'), request.form.get('category'), path, session['user_id'])
+    rowId = createItem(request.form.get('item'), request.form.get('category'), path, session['user_id'], request.form.get('material', ''))
     print(rowId)
 
     # Return user to their closet page

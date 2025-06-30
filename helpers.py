@@ -129,16 +129,16 @@ def dbSelect(query, values=None):
     return data
 
 
-def createItem(itemName, category, imagePath, userId):
-    query = 'INSERT INTO clothing (itemname, category, imagePath, userId) VALUES (?, ?, ?, ?)'
-    values = (itemName, category, imagePath, userId,)
+def createItem(itemName, category, imagePath, userId, material=''):
+    query = 'INSERT INTO clothing (itemname, category, imagePath, userId, material) VALUES (?, ?, ?, ?, ?)'
+    values = (itemName, category, imagePath, userId, material,)
     id = dbInsert(query, values)
 
     return id
 
-def updateItem(itemId, itemName, category, imagePath):
-    query = 'UPDATE clothing SET itemname = ?, category = ?, imagePath = ? WHERE id = ?'
-    values = (itemName, category, imagePath, itemId,)
+def updateItem(itemId, itemName, category, imagePath, material=''):
+    query = 'UPDATE clothing SET itemname = ?, category = ?, imagePath = ?, material = ? WHERE id = ?'
+    values = (itemName, category, imagePath, material, itemId,)
     dbInsert(query, values)
 
     return True
