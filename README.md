@@ -4,10 +4,8 @@ This is a project meant to help me come up with an outfit when I can't decide wh
 
 
 ### Database Info
-Three Tables:
+Two Tables:
 - Users
   - Columns: ID, username, hash
 - Clothing
-  - Columns: ID, itemname, category, needspair
-- Closets
-  - Columns: userid, clothingid
+  - Columns: ID, itemname, category, needspair, imagePath, dateTimeAdded, userId
