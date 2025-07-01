@@ -20,6 +20,14 @@
           <a {% block nav_closet_class %}class="nav-link"{% endblock %} href="/mycloset">My Closet</a>
         </li>
       </ul>
+      <a class="navbar-brand">
+        {% if session["username"] %}
+          {{ session["username"] }}'s
+        {% else %}
+          Your
+        {% endif %}
+          Closet
+      </a>
       <ul class="nav ms-auto mt-2">
         {% if session["user_id"] %}
           <li>

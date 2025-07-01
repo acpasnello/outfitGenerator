@@ -145,6 +145,7 @@ def login():
         con.close()
         # Remember which user has logged in
         session['user_id'] = id
+        session['username'] = user
         print(session)
         # Redirect to My Closet Page
         return redirect(url_for('index'))

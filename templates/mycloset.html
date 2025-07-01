@@ -5,13 +5,17 @@
 {% endblock %}
 
 {% macro itemCard(item) %}
-  <div class="card col-md-3">
-    {% if item.imagePath %}
-      <img src="{{item.imagePath}}" alt="{{item.itemname}} Image" class="closetImage">
-    {% endif %}
-    <div class="card-body">
-      <span>{{item.itemname}}</span>
-      <span>{{item.material}}</span>
+  <div class="col-md-3 ">
+    <div class="card h-100 text-center" style="width: 18rem;">
+      {% if item.imagePath %}
+        <img src="{{item.imagePath}}" alt="{{item.itemname}} Image" class="card-img-top">
+      {% endif %}
+      <div class="card-body">
+        <h6 class="card-title">{{item.itemname}}</h6>
+        {% if item.material %}
+          <p class="card-text">{{item.material}}</p>
+        {% endif %}
+      </div>
     </div>
   </div>
 {%- endmacro %}
@@ -34,14 +38,13 @@
   </ul>
 
   <div class="tab-content" id="myTabContent">
-    <form action="/removefromcloset" method="POST" id="remove"></form>
     {% for category in usercategories %}
       {% if loop.first %}
         <div class="tab-pane fade show active" id="{{category}}" role="tabpanel" aria-labelledby="{{category}}-tab">
       {% else %}
         <div class="tab-pane fade" id="{{category}}" role="tabpanel" aria-labelledby="{{category}}-tab">
       {% endif %}
-          <div class="row">
+          <div class="row gx-3 my-3">
             {% for row in items %}
               {% if row.category == category %}
                 {{ itemCard(row)}}
@@ -51,7 +54,7 @@
         </div>
     {% endfor %}
     <div class="tab-pane fade" id="All" role="tabpanel" aria-labelledby="All-tab">
-      <div class="row">
+      <div class="row gx-3 my-3">
       {% for row in items %}
         {{ itemCard(row)}}
       {% endfor %}
@@ -62,19 +65,27 @@
   {% endblock %} #}
   <div>
     Add a new item to your closet:
-    <form action="/additem" method="POST" enctype="multipart/form-data">
-      <label for="item">Item</label>
-      <input type="text" name="item" placeholder="Item Name">
-      <label for="category">Item Type</label>
-      <select name="category" required>
-        {% for item in allcategories %}
-          <option value="{{item}}">{{item}}</option>
-        {% endfor %}
-      </select>
-      <label for="material">Material</label>
-      <input type="text" name="material" placeholder="Material">
-      <label for="clothingImage">Image</label>
-      <input type="file" name="clothingImage" id="clothingImage">
+    <form action="/additem" method="POST" enctype="multipart/form-data" class="row g-3">
+      <div class="col-md-6 col-lg-3">
+        <label for="item" class="form-label">Item</label>
+        <input type="text" name="item" placeholder="Item Name" class="form-control">
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <label for="category" class="form-label">Item Type</label>
+        <select name="category" class="form-select" required>
+          {% for item in allcategories %}
+            <option value="{{item}}">{{item}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6 col-lg-3">
+          <label for="material" class="form-label">Material</label>
+        <input type="text" name="material" placeholder="Material" class="form-control">
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <label for="clothingImage" class="form-label">Image</label>
+        <input type="file" name="clothingImage" id="clothingImage" class="form-control btn btn-outline-secondary">
+      </div>
       <button class="btn btn-primary" type="submit">Add Item</button>
   </div>
 {% endblock %}
