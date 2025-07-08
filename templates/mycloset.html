@@ -5,16 +5,31 @@
 {% endblock %}
 
 {% macro itemCard(item) %}
-  <div class="col-md-3 ">
-    <div class="card h-100 text-center" style="width: 18rem;">
+  <div class="col-md-4 col-lg-3 closetCard">
+    <div class="card h-100 text-center">
+      <div class="dropup cardMenuButtonDiv">
+        <button class="btn cardMenuButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+            </svg>
+          </span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#" class="dropdown-item editCardMenuOption">Edit Item</a></li>
+          <li><a href="#" class="dropdown-item deleteCardMenuOption">Delete Item</a></li>
+        </ul>
+      </div>
       {% if item.imagePath %}
         <img src="{{item.imagePath}}" alt="{{item.itemname}} Image" class="card-img-top">
       {% endif %}
       <div class="card-body">
-        <h6 class="card-title">{{item.itemname}}</h6>
+        <h6 class="card-title itemName">{{item.itemname}}</h6>
         {% if item.material %}
-          <p class="card-text">{{item.material}}</p>
+          <p class="card-text itemMaterial">{{item.material}}</p>
         {% endif %}
+        <span class="itemId" style="display:none;">{{item.id}}</span>
+        <span class="itemCategory" style="display:none;">{{item.category}}</span>
       </div>
     </div>
   </div>
@@ -63,24 +78,25 @@
   </div>
   {# {% block content %}
   {% endblock %} #}
-  <div>
-    Add a new item to your closet:
-    <form action="/additem" method="POST" enctype="multipart/form-data" class="row g-3">
+  <div class="border border-primary-subtle rounded p-3">
+    <h6>Add a new item to your closet:</h6>
+    <form action="/additem" method="POST" enctype="multipart/form-data" class="row g-3 text-start">
       <div class="col-md-6 col-lg-3">
-        <label for="item" class="form-label">Item</label>
-        <input type="text" name="item" placeholder="Item Name" class="form-control">
+        <label for="item" class="form-label">Item Name</label>
+        <input type="text" name="item" id="item" placeholder="Item Name" class="form-control" required>
       </div>
       <div class="col-md-6 col-lg-3">
         <label for="category" class="form-label">Item Type</label>
-        <select name="category" class="form-select" required>
+        <select name="category" id="category" class="form-select" required>
+          <option value="">Select item type</option>
           {% for item in allcategories %}
             <option value="{{item}}">{{item}}</option>
           {% endfor %}
         </select>
       </div>
       <div class="col-md-6 col-lg-3">
-          <label for="material" class="form-label">Material</label>
-        <input type="text" name="material" placeholder="Material" class="form-control">
+        <label for="material" class="form-label">Material</label>
+        <input type="text" name="material" id="material" placeholder="Material" class="form-control">
       </div>
       <div class="col-md-6 col-lg-3">
         <label for="clothingImage" class="form-label">Image</label>
@@ -88,4 +104,153 @@
       </div>
       <button class="btn btn-primary" type="submit">Add Item</button>
   </div>
+{% endblock %}
+
+{% block moreScripts %}
+  <script>
+    // function that gets item details from card
+    function getItemDetails(card) {
+      let item = {} 
+      item['itemId'] = card.querySelector('.itemId').textContent;
+      item['itemName'] = card.querySelector('.itemName').textContent;
+      item['category'] = card.querySelector('.itemCategory').textContent;
+      item['itemMaterial'] = card.querySelector('.itemMaterial').textContent;
+
+      return item
+    }
+
+    // function that creates a select element with provided option value
+    function createOption(value) {
+      let option = document.createElement('option')
+      option.setAttribute('value', value)
+      option.textContent = value
+      return option
+    }
+    // function to create a div for a label and input pair
+    function createFormPairDiv() {
+      let div = document.createElement('div')
+      div.classList.add('mb-2')
+      return div
+    }
+    // function that creates form with item's current details prepopulated
+    function createItemForm(item) {
+      let form = document.createElement('form')
+      form.setAttribute('method', 'POST')
+      form.setAttribute('action', '/edititem')
+      form.setAttribute('enctype', 'multipart/form-data')
+      form.classList.add('text-start')
+
+      let guideText = document.createElement('div')
+      guideText.classList.add('form-text')
+      guideText.textContent = 'Edit item details you wish to change. \nUnchanged details will not be updated.'
+
+      let itemNameLabel = document.createElement('label')
+      itemNameLabel.setAttribute('for', 'editItemName')
+      itemNameLabel.textContent = 'Item Name'
+      itemNameLabel.classList.add('form-label')
+      let itemNameInput = document.createElement('input')
+      itemNameInput.setAttribute('type', 'text')
+      itemNameInput.setAttribute('name', 'item')
+      itemNameInput.setAttribute('id', 'editItemName')
+      itemNameInput.setAttribute('value', item.itemName)
+      itemNameInput.classList.add('form-control', 'form-control-sm')
+      let itemNameDiv = createFormPairDiv()
+      itemNameDiv.append(itemNameLabel, itemNameInput)
+
+      let categoryLabel = document.createElement('label')
+      categoryLabel.setAttribute('for', 'editCategory')
+      categoryLabel.textContent = 'Category'
+      categoryLabel.classList.add('form-label')
+      let categorySelect = document.createElement('select')
+      categorySelect.setAttribute('id', 'editCategory')
+      categorySelect.classList.add('form-select', 'form-select-sm')
+      {% for category in allcategories %}
+        categorySelect.appendChild(createOption('{{category}}'))
+      {% endfor %}
+      let categoryDiv = createFormPairDiv()
+      categoryDiv.append(categoryLabel, categorySelect)
+
+      let materialLabel = document.createElement('label')
+      materialLabel.setAttribute('for', 'editMaterial')
+      materialLabel.textContent = 'Material'
+      materialLabel.classList.add('form-label')
+      let materialInput = document.createElement('input')
+      materialInput.setAttribute('type', 'text')
+      materialInput.setAttribute('name', 'material')
+      materialInput.setAttribute('id', 'editMaterial')
+      materialInput.setAttribute('value', item.itemMaterial)
+      materialInput.classList.add('form-control', 'form-control-sm')
+      let materialDiv = createFormPairDiv()
+      materialDiv.append(materialLabel, materialInput)
+
+      let imageLabel = document.createElement('label')
+      imageLabel.setAttribute('for', 'newImage')
+      imageLabel.textContent = 'Change Item Image'
+      imageLabel.classList.add('form-label')
+      let imageInput = document.createElement('input')
+      imageInput.setAttribute('type', 'file')
+      imageInput.setAttribute('name', 'clothingImage')
+      imageInput.setAttribute('id', 'newImage')
+      imageInput.classList.add('form-control', 'form-control-sm')
+      let imageDiv = createFormPairDiv()
+      imageDiv.append(imageLabel, imageInput)
+
+      let submitButton = document.createElement('button')
+      submitButton.setAttribute('type', 'submit')
+      submitButton.classList.add('btn', 'btn-outline-primary', 'btn-sm', 'w-100')
+      submitButton.textContent = 'Update'
+
+      form.append(guideText, itemNameDiv, categoryDiv, materialDiv, imageDiv, submitButton)
+      return form
+    }
+    // function that inserts new card after submitted card
+    function insertClosetCard(currentCard, itemDetails, editButton) {
+      let newCard = document.createElement('div')
+      newCard.classList.add('col-md-4', 'col-lg-3', 'closetCard')
+      let cardInterior = document.createElement('div')
+      cardInterior.classList.add('card', 'h-100', 'p-2')
+
+      let title = document.createElement('h5')
+      title.textContent = 'Update Item Details'
+
+      let closeButton = document.createElement('button')
+      closeButton.setAttribute('type', 'button')
+      closeButton.classList.add('btn-close', 'cardEditCloseButton')
+      closeButton.setAttribute('aria-label', 'Close')
+      closeButton.addEventListener('click', function() {
+        newCard.remove()
+        editButton.addEventListener('click', editButtonHandler)
+      })
+
+      let form = createItemForm(itemDetails)
+      cardInterior.append(title, closeButton, form)
+      newCard.appendChild(cardInterior)
+      currentCard.insertAdjacentElement('afterend', newCard)
+    }
+
+    function editButtonHandler(event) {
+      let editButton = event.currentTarget
+      let card = editButton.closest('.closetCard')
+      let item = getItemDetails(card)
+
+      insertClosetCard(card, item, editButton)
+      editButton.removeEventListener('click', editButtonHandler)
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll('.editCardMenuOption').forEach(editButton => {
+        editButton.addEventListener('click', editButtonHandler)
+        // editButton.addEventListener('click', function(e) {
+        //   console.log(e)
+        //   let card = editButton.closest('.closetCard');
+        //   let item = getItemDetails(card);
+
+        //   console.log(editButton)
+        //   console.log(item)
+          
+        //   insertClosetCard(card, item)
+        //})
+      })
+    })
+  </script>
 {% endblock %}
