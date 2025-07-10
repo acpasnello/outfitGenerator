@@ -100,6 +100,18 @@ def saveImage(file):
     # return full filepath to save in database
     return os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
 
+def processImageSubmission(requestFiles):
+    # Receives request.files and checks for clothingImage, saving an uploaded image and returning the filepath
+    path = None
+    if 'clothingImage' in requestFiles:
+        file = requestFiles['clothingImage']
+        if file.filename == '':
+            path = None
+        else:
+            path = saveImage(file)
+    
+    return path
+
 def getDbConnection(withRow=True):
     # Open database connection and return cursor, option to return indexed and named access to columns
     con = sqlite3.connect('outfits.db')
@@ -136,9 +148,25 @@ def createItem(itemName, category, imagePath, userId, material=''):
 
     return id
 
-def updateItem(itemId, itemName, category, imagePath, material=''):
-    query = 'UPDATE clothing SET itemname = ?, category = ?, imagePath = ?, material = ? WHERE id = ?'
-    values = (itemName, category, imagePath, material, itemId,)
+def updateItem(itemId, itemName, category, material=''):
+    query = 'UPDATE clothing SET itemname = ?, category = ?, material = ? WHERE id = ?'
+    values = (itemName, category, material, itemId,)
     dbInsert(query, values)
+
+    return True
+
+def updateItemImage(itemId, imagePath):
+    query = 'UPDATE clothing SET imagePath = ? where id = ?'
+    values = (imagePath, itemId,)
+    dbInsert(query, values)
+
+    return True
+
+def processItemUpdate(itemDetails, imagePath):
+    # Need to only update fields that the user submitted new data for
+    if imagePath:
+        updateItemImage(itemDetails['id'], imagePath)
+    
+    updateItem(itemDetails['id'], itemDetails['itemName'], itemDetails['category'], itemDetails['material'])
 
     return True

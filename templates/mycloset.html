@@ -136,7 +136,7 @@
     function createItemForm(item) {
       let form = document.createElement('form')
       form.setAttribute('method', 'POST')
-      form.setAttribute('action', '/edititem')
+      form.setAttribute('action', '/updateitem')
       form.setAttribute('enctype', 'multipart/form-data')
       form.classList.add('text-start')
 
@@ -163,6 +163,7 @@
       categoryLabel.classList.add('form-label')
       let categorySelect = document.createElement('select')
       categorySelect.setAttribute('id', 'editCategory')
+      categorySelect.setAttribute('name', 'editCategory')
       categorySelect.classList.add('form-select', 'form-select-sm')
       {% for category in allcategories %}
         categorySelect.appendChild(createOption('{{category}}'))
@@ -195,12 +196,17 @@
       let imageDiv = createFormPairDiv()
       imageDiv.append(imageLabel, imageInput)
 
+      let itemIdInput = document.createElement('input')
+      itemIdInput.setAttribute('type', 'hidden')
+      itemIdInput.setAttribute('name', 'itemId')
+      itemIdInput.setAttribute('value', item.itemId)
+
       let submitButton = document.createElement('button')
       submitButton.setAttribute('type', 'submit')
       submitButton.classList.add('btn', 'btn-outline-primary', 'btn-sm', 'w-100')
       submitButton.textContent = 'Update'
 
-      form.append(guideText, itemNameDiv, categoryDiv, materialDiv, imageDiv, submitButton)
+      form.append(guideText, itemNameDiv, categoryDiv, materialDiv, imageDiv, itemIdInput, submitButton)
       return form
     }
     // function that inserts new card after submitted card

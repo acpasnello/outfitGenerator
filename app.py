@@ -8,7 +8,7 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import login_required, outfitpicker, saveImage, dbInsert, dbSelect, createItem
+from helpers import login_required, outfitpicker, saveImage, dbInsert, dbSelect, createItem, processImageSubmission, processItemUpdate
 
 # When running from terminal: export FLASK_ENV=development
 
@@ -173,23 +173,6 @@ def mycloset():
     
     return render_template('mycloset.html', usercategories=usercategories, items=items, allcategories=allcategories)
 
-# @app.route('/addtocloset', methods=['GET', 'POST'])
-# @login_required
-# def addtocloset():
-#     # Add existing clothing option to user's closet
-#     # How do I get which option user clicked on?
-#     if request.method == "POST":
-#         options = request.form.getlist('option')
-#         con = sqlite3.connect('outfits.db')
-#         db = con.cursor()
-#         for i in range(len(options)):
-#             db.execute('INSERT INTO closets VALUES (?,?)', (options[i], session['user_id']))
-#         con.commit()
-#         con.close()
-#         return redirect('/mycloset')
-#     else:
-#         return render_template('mycloset.html')
-
 @app.route('/removefromcloset', methods=['POST'])
 @login_required
 def removefromcloset():
@@ -212,23 +195,36 @@ def logout():
     return redirect('/')
 
 @app.route('/additem', methods=['POST'])
+@login_required
 def addItem():
     if request.method != "POST":
         return redirect(url_for('mycloset'))
     
-    print(request.form, request.files)
-    path = None
-    if 'clothingImage' in request.files:
-        print('clothingImage')
-        file = request.files['clothingImage']
-        if file.filename == '':
-            path = None
-        else:
-            path = saveImage(file)
-        print(path)
+    path = processImageSubmission(request.files)
   
     rowId = createItem(request.form.get('item'), request.form.get('category'), path, session['user_id'], request.form.get('material', ''))
-    print(rowId)
 
     # Return user to their closet page
     return redirect(url_for('mycloset'))
+
+@app.route('/updateitem', methods=['POST'])
+@login_required
+def updateItem():
+    if request.method != "POST":
+        return redirect(url_for('mycloset'))
+    
+    path = processImageSubmission(request.files)
+
+    itemDetails = {
+        'id': request.form.get('itemId'),
+        'itemName': request.form.get('item'),
+        'category': request.form.get('editCategory'),
+        'material': request.form.get('material')
+    }
+
+    processItemUpdate(itemDetails, path)
+
+    return redirect(url_for('mycloset'))
+    
+
+    
