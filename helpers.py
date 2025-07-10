@@ -29,13 +29,17 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
         if items[rand]['category'] == 'Bottom' and not bottom:
             bottom = items[rand]
             continue
+        if items[rand]['category'] == 'Dress' and not top and not bottom:
+            top = items[rand]
+            bottom = top
+            continue
 
     outfit = {
         'shoes': shoes,
         'top': top,
         'bottom': bottom
     }
-
+    print(outfit)
     return outfit
 
 def outfitpicker(items):
