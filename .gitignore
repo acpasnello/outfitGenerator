@@ -5,3 +5,4 @@ outfits.db
 flask_session/
 uploads
 .DS_Store
+venv

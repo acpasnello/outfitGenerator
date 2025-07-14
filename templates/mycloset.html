@@ -62,7 +62,7 @@
           <div class="row gx-3 my-3">
             {% for row in items %}
               {% if row.category == category %}
-                {{ itemCard(row)}}
+                {{ itemCard(row) }}
               {% endif %}
             {% endfor %}
           </div>
@@ -100,7 +100,7 @@
       </div>
       <div class="col-md-6 col-lg-3">
         <label for="clothingImage" class="form-label">Image</label>
-        <input type="file" name="clothingImage" id="clothingImage" class="form-control btn btn-outline-secondary">
+        <input type="file" accept="image/png, image/jpg, image/jpeg, image/webp, image/avif" name="clothingImage" id="clothingImage" class="form-control btn btn-outline-secondary">
       </div>
       <button class="btn btn-primary" type="submit">Add Item</button>
   </div>
@@ -246,16 +246,6 @@
     document.addEventListener("DOMContentLoaded", function() {
       document.querySelectorAll('.editCardMenuOption').forEach(editButton => {
         editButton.addEventListener('click', editButtonHandler)
-        // editButton.addEventListener('click', function(e) {
-        //   console.log(e)
-        //   let card = editButton.closest('.closetCard');
-        //   let item = getItemDetails(card);
-
-        //   console.log(editButton)
-        //   console.log(item)
-          
-        //   insertClosetCard(card, item)
-        //})
       })
     })
   </script>

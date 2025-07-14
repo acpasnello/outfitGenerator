@@ -1,24 +1,32 @@
 {% extends "layout.html" %}
 
+{% macro outfitCard(item) %}
+  <div class="outfitItem">
+    <div class="outfitItemText">
+      {{item.itemname}}
+    </div>
+    <div class="outfitItemImage">
+      <img src="{{item.imagePath}}" alt="{{item.itemname}}" class="">
+    </div>
+  </div>
+{%- endmacro %}
+
 {% block navIndexClass %}
   class="nav-link active"
 {% endblock %}
 
 {% block main %}
   <div>
-    Wear this today:
-    <div>
-      {{ item1.itemname }}
-    </div>
-    {% if item2.id == item1.id %}
-    
-    {% else %}
-      <div>
-        {{ item2.itemname }}
-      </div>
-    {% endif %}
-    <div>
-      {{ shoes.itemname }}
+    <h1>Wear this today</h1>
+    <div class="outfitDisplay">
+      {{ outfitCard(item1) }}
+      {% if item2.id == item1.id %}
+      
+      {% else %}
+        {{ outfitCard(item2) }}
+      {% endif %}
+
+      {{ outfitCard(shoes) }}
     </div>
   </div>
 {% endblock %}

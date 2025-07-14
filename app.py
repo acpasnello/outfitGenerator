@@ -1,14 +1,13 @@
 import os
 import sqlite3
-import click
-import cs50
 
 from flask import Flask, redirect, render_template, request, session, current_app, g, url_for
 from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import login_required, pickOutfit, outfitpicker, saveImage, dbInsert, dbSelect, createItem, processImageSubmission, processItemUpdate
+from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate
+from utils.images import processImageSubmission
 
 # When running from terminal: export FLASK_ENV=development
 
@@ -34,38 +33,14 @@ Session(app)
 @app.route("/")
 @login_required
 def index():
-    # print('index')
-    # Open database connection
-    # con = sqlite3.connect('outfits.db')
-    # print(con)
-    # con.row_factory = sqlite3.Row
-    # db = con.cursor()
-    # print(db)
-    # Get categories
-    # db.execute('SELECT clothing.category, clothing.itemname FROM clothing JOIN closets ON clothing.id=closets.itemid WHERE closets.userid = ? GROUP BY category', (session['user_id'], ))
-    # info = db.fetchall()
-    # print(info)
-    # categories = []
-    # for i in range(len(info)):
-    #     print(info[i]["category"])
-    #     categories.append(info[i]["category"])
-
     # Get clothing
     items = dbSelect('SELECT * FROM clothing WHERE userid = ?', (session['user_id'],))
     # print(items)
     if items and len(items) >= 3:
-        # outfit = outfitpicker(items)
-        # shoes = outfit[0]
-        # item1 = outfit[1]
-        # item2 = outfit[2]
-        # if outfit[0]:
-        #     return render_template('login.html')
-        # return render_template('index.html', categories=categories, shoes=shoes, item1=item1, item2=item2)
         outfit = pickOutfit(items)
         return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
     else:
-        # Had to redirect to closet if user had no items, like a new user
-        # need a better way to handle this
+        # Had to redirect to closet if user had too few items
         return redirect(url_for('mycloset'))
 
 @app.route("/register", methods=["GET", "POST"])
@@ -168,22 +143,8 @@ def mycloset():
 
     # Get user's clothing items
     items = dbSelect('SELECT * FROM clothing WHERE userId = ?', (session['user_id'], ))
-    # Get clothing items not owned by user
-    # notOwned = dbSelect('select * from clothing WHERE userId != ?', (session['user_id'], ))
     
     return render_template('mycloset.html', usercategories=usercategories, items=items, allcategories=allcategories)
-
-# @app.route('/removefromcloset', methods=['POST'])
-# @login_required
-# def removefromcloset():
-#     # Remove item from user's closet
-#     item = request.form.get('item')
-#     con = sqlite3.connect('outfits.db')
-#     db = con.cursor()
-#     db.execute('DELETE FROM closets WHERE itemid = ? AND userid = ?', (item, session['user_id']))
-#     con.commit()
-#     con.close()
-#     return redirect('/mycloset')
 
 @app.route('/logout')
 def logout():
@@ -225,6 +186,3 @@ def updateItem():
     processItemUpdate(itemDetails, path)
 
     return redirect(url_for('mycloset'))
-    
-
-    
