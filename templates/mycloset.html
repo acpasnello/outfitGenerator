@@ -30,6 +30,7 @@
         {% endif %}
         <span class="itemId" style="display:none;">{{item.id}}</span>
         <span class="itemCategory" style="display:none;">{{item.category}}</span>
+        <span class="itemNeedsPair" style="display:none;">{{item.needsPair}}</span>
       </div>
     </div>
   </div>
@@ -50,6 +51,7 @@
     {% endfor %}
     <li class="nav-item" role="presentation">
       <button class="nav-link" id="All-tab" data-bs-toggle="tab" data-bs-target="#All" type="button" role="tab" aria-controls="All" aria-selected="false">All</button>
+    </li>
   </ul>
 
   <div class="tab-content" id="myTabContent">
@@ -59,7 +61,7 @@
       {% else %}
         <div class="tab-pane fade" id="{{category}}" role="tabpanel" aria-labelledby="{{category}}-tab">
       {% endif %}
-          <div class="row gx-3 my-3">
+          <div class="row g-3 my-3">
             {% for row in items %}
               {% if row.category == category %}
                 {{ itemCard(row) }}
@@ -69,7 +71,7 @@
         </div>
     {% endfor %}
     <div class="tab-pane fade" id="All" role="tabpanel" aria-labelledby="All-tab">
-      <div class="row gx-3 my-3">
+      <div class="row g-3 my-3">
       {% for row in items %}
         {{ itemCard(row)}}
       {% endfor %}
@@ -81,12 +83,12 @@
   <div class="border border-primary-subtle rounded p-3">
     <h6>Add a new item to your closet:</h6>
     <form action="/additem" method="POST" enctype="multipart/form-data" class="row g-3 text-start">
-      <div class="col-md-6 col-lg-3">
+      <div class="col-md-4 col-lg-3">
         <label for="item" class="form-label">Item Name</label>
         <input type="text" name="item" id="item" placeholder="Item Name" class="form-control" required>
       </div>
-      <div class="col-md-6 col-lg-3">
-        <label for="category" class="form-label">Item Type</label>
+      <div class="col-md-4 col-lg-3">
+        <label for="category" class="form-label">Category</label>
         <select name="category" id="category" class="form-select" required>
           <option value="">Select item type</option>
           {% for item in allcategories %}
@@ -94,11 +96,31 @@
           {% endfor %}
         </select>
       </div>
-      <div class="col-md-6 col-lg-3">
+      <div class="col-md-4 col-lg-3">
+        <div class="form-label">
+          Is this item an outfit on its own?
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input" type="radio" name="needsPair" id="needsPairYes" value="Y" autocomplete="off">
+          <label class="form-check-label" for="needsPairYes">Yes</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input" type="radio" name="needsPair" id="needsPairNo" value="N" checked autocomplete="off">
+          <label class="form-check-label" for="needsPairNo">No</label>
+        </div>
+        <a tabindex="0" class="formPopover" data-bs-toggle="popover" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="For example, select 'Yes' for a dress that you wear on its own. Select 'No' for pants that you need to wear a top with.">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+              <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+              <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+              <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+            </svg>
+          </a>
+      </div>
+      <div class="col-md-4 col-lg-3">
         <label for="material" class="form-label">Material</label>
         <input type="text" name="material" id="material" placeholder="Material" class="form-control">
       </div>
-      <div class="col-md-6 col-lg-3">
+      <div class="col-md-4 col-lg-3">
         <label for="clothingImage" class="form-label">Image</label>
         <input type="file" accept="image/png, image/jpg, image/jpeg, image/webp, image/avif" name="clothingImage" id="clothingImage" class="form-control btn btn-outline-secondary">
       </div>
@@ -115,6 +137,7 @@
       item['itemName'] = card.querySelector('.itemName').textContent;
       item['category'] = card.querySelector('.itemCategory').textContent;
       item['itemMaterial'] = card.querySelector('.itemMaterial').textContent;
+      item['needsPair'] = card.querySelector('.itemNeedsPair').textContent
 
       return item
     }
@@ -132,6 +155,34 @@
       div.classList.add('mb-2')
       return div
     }
+
+    function createLabel(forInput) {
+      let label = document.createElement('label')
+      label.classList.add('form-label')
+      label.setAttribute('for', forInput)
+      return label
+    }
+
+    function createInput() {
+      let el = document.createElement('input')
+      return el
+    }
+
+    function createTextInput() {
+      let el = createInput()
+      el.setAttribute('type', 'text')
+      el.classList.add('form-control', 'form-control-sm')
+      return el
+    }
+
+    function createNeedsPairRadio() {
+      let el = createInput()
+      el.classList.add('form-check-input')
+      el.setAttribute('type', 'radio')
+      el.setAttribute('autocomplete', 'off')
+
+      return el
+    }
     // function that creates form with item's current details prepopulated
     function createItemForm(item) {
       let form = document.createElement('form')
@@ -144,23 +195,17 @@
       guideText.classList.add('form-text')
       guideText.textContent = 'Edit item details you wish to change. \nUnchanged details will not be updated.'
 
-      let itemNameLabel = document.createElement('label')
-      itemNameLabel.setAttribute('for', 'editItemName')
+      let itemNameLabel = createLabel('editItemName')
       itemNameLabel.textContent = 'Item Name'
-      itemNameLabel.classList.add('form-label')
-      let itemNameInput = document.createElement('input')
-      itemNameInput.setAttribute('type', 'text')
+      let itemNameInput = createTextInput()
       itemNameInput.setAttribute('name', 'item')
       itemNameInput.setAttribute('id', 'editItemName')
       itemNameInput.setAttribute('value', item.itemName)
-      itemNameInput.classList.add('form-control', 'form-control-sm')
       let itemNameDiv = createFormPairDiv()
       itemNameDiv.append(itemNameLabel, itemNameInput)
 
-      let categoryLabel = document.createElement('label')
-      categoryLabel.setAttribute('for', 'editCategory')
+      let categoryLabel = createLabel('editCategory')
       categoryLabel.textContent = 'Category'
-      categoryLabel.classList.add('form-label')
       let categorySelect = document.createElement('select')
       categorySelect.setAttribute('id', 'editCategory')
       categorySelect.setAttribute('name', 'editCategory')
@@ -171,30 +216,54 @@
       let categoryDiv = createFormPairDiv()
       categoryDiv.append(categoryLabel, categorySelect)
 
-      let materialLabel = document.createElement('label')
-      materialLabel.setAttribute('for', 'editMaterial')
+      let needsPairLabel = createLabel()
+      needsPairLabel.textContent = 'Is this item an outfit on its own?'
+      let needsPairNoInput = createNeedsPairRadio()
+      needsPairNoInput.setAttribute('value', '1')
+      let needsPairNoLabel = document.createElement('label')
+      needsPairNoLabel.classList.add('form-check-label')
+      needsPairNoLabel.textContent = 'No'
+      let needsPairNoDiv = document.createElement('div')
+      needsPairNoDiv.classList.add('form-check-inline')
+      needsPairNoDiv.append(needsPairNoInput, needsPairNoLabel)
+      let needsPairYesInput = createNeedsPairRadio()
+      needsPairYesInput.setAttribute('value', '0')
+      let needsPairYesLabel = document.createElement('label')
+      needsPairYesLabel.textContent = 'Yes'
+      needsPairYesLabel.classList.add('form-check-label')
+      let needsPairYesDiv = document.createElement('div')
+      needsPairYesDiv.classList.add('form-check-inline')
+      needsPairYesDiv.append(needsPairYesInput, needsPairYesLabel)
+      let needsPairDiv = createFormPairDiv()
+      console.log(item)
+      if (item.needsPair == 1) {
+        needsPairNoInput.setAttribute('checked', '')
+      } else {
+        needsPairYesInput.setAttribute('checked', '')
+      }
+      needsPairDiv.append(needsPairLabel, needsPairYesDiv, needsPairNoDiv)
+
+      let materialLabel = createLabel('editMaterial')
       materialLabel.textContent = 'Material'
-      materialLabel.classList.add('form-label')
-      let materialInput = document.createElement('input')
-      materialInput.setAttribute('type', 'text')
+      let materialInput = createTextInput()
       materialInput.setAttribute('name', 'material')
       materialInput.setAttribute('id', 'editMaterial')
       materialInput.setAttribute('value', item.itemMaterial)
-      materialInput.classList.add('form-control', 'form-control-sm')
       let materialDiv = createFormPairDiv()
       materialDiv.append(materialLabel, materialInput)
 
-      let imageLabel = document.createElement('label')
-      imageLabel.setAttribute('for', 'newImage')
+      let imageLabel = createLabel('newImage')
       imageLabel.textContent = 'Change Item Image'
-      imageLabel.classList.add('form-label')
       let imageInput = document.createElement('input')
       imageInput.setAttribute('type', 'file')
       imageInput.setAttribute('name', 'clothingImage')
       imageInput.setAttribute('id', 'newImage')
       imageInput.classList.add('form-control', 'form-control-sm')
+      let imageTextDiv = document.createElement('div')
+      imageTextDiv.classList.add('form-text')
+      imageTextDiv.textContent = 'Leave blank to keep current image'
       let imageDiv = createFormPairDiv()
-      imageDiv.append(imageLabel, imageInput)
+      imageDiv.append(imageLabel, imageInput, imageTextDiv)
 
       let itemIdInput = document.createElement('input')
       itemIdInput.setAttribute('type', 'hidden')
@@ -206,7 +275,7 @@
       submitButton.classList.add('btn', 'btn-outline-primary', 'btn-sm', 'w-100')
       submitButton.textContent = 'Update'
 
-      form.append(guideText, itemNameDiv, categoryDiv, materialDiv, imageDiv, itemIdInput, submitButton)
+      form.append(itemNameDiv, categoryDiv, needsPairDiv, materialDiv, imageDiv, itemIdInput, submitButton)
       return form
     }
     // function that inserts new card after submitted card
@@ -247,6 +316,9 @@
       document.querySelectorAll('.editCardMenuOption').forEach(editButton => {
         editButton.addEventListener('click', editButtonHandler)
       })
+
+      const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+      const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
     })
   </script>
 {% endblock %}

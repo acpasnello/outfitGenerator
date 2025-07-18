@@ -90,9 +90,9 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
 #     return data
 
 
-def createItem(itemName, category, imagePath, userId, material=''):
-    query = 'INSERT INTO clothing (itemname, category, imagePath, userId, material) VALUES (?, ?, ?, ?, ?)'
-    values = (itemName, category, imagePath, userId, material,)
+def createItem(itemName, category, imagePath, userId, needsPair=1, material=''):
+    query = 'INSERT INTO clothing (itemname, category, needsPair, imagePath, userId, material) VALUES (?, ?, ?, ?, ?, ?)'
+    values = (itemName, category, needsPair, imagePath, userId, material,)
     id = dbInsert(query, values)
 
     return id

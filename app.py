@@ -161,9 +161,9 @@ def addItem():
     if request.method != "POST":
         return redirect(url_for('mycloset'))
     
-    path = processImageSubmission(request.files)
+    imagePath = processImageSubmission(request.files)
   
-    rowId = createItem(request.form.get('item'), request.form.get('category'), path, session['user_id'], request.form.get('material', ''))
+    rowId = createItem(request.form.get('item'), request.form.get('category'), imagePath, session['user_id'], request.form.get('needsPair'), request.form.get('material', ''))
 
     # Return user to their closet page
     return redirect(url_for('mycloset'))
