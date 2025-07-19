@@ -89,12 +89,12 @@
       </div>
       <div class="col-md-4 col-lg-3">
         <label for="category" class="form-label">Category</label>
-        <select name="category" id="category" class="form-select" required>
-          <option value="">Select item type</option>
+        <input list="categories" id="category" name="category" class="form-control" placeholder="Type to search...">
+        <datalist id="categories">
           {% for item in allcategories %}
-            <option value="{{item}}">{{item}}</option>
+            <option value="{{item}}"></option>
           {% endfor %}
-        </select>
+        </datalist>
       </div>
       <div class="col-md-4 col-lg-3">
         <div class="form-label">
@@ -118,7 +118,12 @@
       </div>
       <div class="col-md-4 col-lg-3">
         <label for="material" class="form-label">Material</label>
-        <input type="text" name="material" id="material" placeholder="Material" class="form-control">
+        <input type="text" name="material" id="material" placeholder="Type to search..." class="form-control" list="materials">
+        <datalist id="materials">
+          {% for item in materials %}
+            <option value="{{item}}"></option>
+          {% endfor %}
+        </datalist>
       </div>
       <div class="col-md-4 col-lg-3">
         <label for="clothingImage" class="form-label">Image</label>
@@ -141,11 +146,14 @@
 
       return item
     }
-
-    // function that creates a select element with provided option value
     function createOption(value) {
       let option = document.createElement('option')
       option.setAttribute('value', value)
+      return option
+    }
+    // function that creates a select element with provided option value
+    function createSelectOption(value) {
+      let option = createOption(value)
       option.textContent = value
       return option
     }
@@ -211,7 +219,7 @@
       categorySelect.setAttribute('name', 'editCategory')
       categorySelect.classList.add('form-select', 'form-select-sm')
       {% for category in allcategories %}
-        categorySelect.appendChild(createOption('{{category}}'))
+        categorySelect.appendChild(createSelectOption('{{category}}'))
       {% endfor %}
       let categoryDiv = createFormPairDiv()
       categoryDiv.append(categoryLabel, categorySelect)
@@ -249,8 +257,13 @@
       materialInput.setAttribute('name', 'material')
       materialInput.setAttribute('id', 'editMaterial')
       materialInput.setAttribute('value', item.itemMaterial)
+      materialInput.setAttribute('list', '')
+      let materialDatalist = document.createElement('datalist')
+      {% for item in materials %}
+        materialDatalist.appendChild(createOption('{{item}}'))
+      {% endfor %}
       let materialDiv = createFormPairDiv()
-      materialDiv.append(materialLabel, materialInput)
+      materialDiv.append(materialLabel, materialInput, materialDatalist)
 
       let imageLabel = createLabel('newImage')
       imageLabel.textContent = 'Change Item Image'

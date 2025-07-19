@@ -19,6 +19,10 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
 
     while not (shoes and top and bottom):
         rand = randrange(len(items))
+        if items[rand]['needsPair'] == 0 and not top and not bottom:
+            top = items['rand']
+            bottom = top
+            continue
         if items[rand]['category'] == 'Shoes' and not shoes:
             shoes = items[rand]
             continue
@@ -41,54 +45,6 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
     print(outfit)
     
     return outfit
-
-# def saveImage(file):
-#     # safely save image in file system
-#     filename = secure_filename(file.filename)
-#     file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-#     # return full filepath to save in database
-#     return os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-
-# def processImageSubmission(requestFiles):
-#     # Receives request.files and checks for clothingImage, saving an uploaded image and returning the filepath
-#     path = None
-#     if 'clothingImage' in requestFiles:
-#         file = requestFiles['clothingImage']
-#         if file.filename == '':
-#             path = None
-#         else:
-#             path = saveImage(file)
-    
-#     return path
-
-# def getDbConnection(withRow=True):
-#     # Open database connection and return cursor, option to return indexed and named access to columns
-#     con = sqlite3.connect('outfits.db')
-#     if withRow:
-#         con.row_factory = sqlite3.Row
-
-#     return con
-
-# def dbInsert(query, values):
-#     db = getDbConnection(False)
-#     cur = db.cursor()
-#     cur.execute(query, values)
-#     rowId = cur.lastrowid
-#     db.commit()
-#     db.close()
-
-#     return rowId
-
-# def dbSelect(query, values=None):
-#     db = getDbConnection(True)
-#     cur = db.cursor()
-#     if values:
-#         data = cur.execute(query, values).fetchall()
-#     else:
-#         data = cur.execute(query).fetchall()
-#     db.close()
-#     return data
-
 
 def createItem(itemName, category, imagePath, userId, needsPair=1, material=''):
     query = 'INSERT INTO clothing (itemname, category, needsPair, imagePath, userId, material) VALUES (?, ?, ?, ?, ?, ?)'

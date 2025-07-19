@@ -143,8 +143,13 @@ def mycloset():
 
     # Get user's clothing items
     items = dbSelect('SELECT * FROM clothing WHERE userId = ?', (session['user_id'], ))
+
+    # Get user's materials for new item material datalist
+    materials = []
+    for row in dbSelect('SELECT * FROM clothing WHERE userId = ? GROUP BY material', (session['user_id'],)):
+        materials.append(row['material'])
     
-    return render_template('mycloset.html', usercategories=usercategories, items=items, allcategories=allcategories)
+    return render_template('mycloset.html', usercategories=usercategories, items=items, allcategories=allcategories, materials=materials)
 
 @app.route('/logout')
 def logout():
