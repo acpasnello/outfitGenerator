@@ -185,6 +185,7 @@ def updateItem():
         'id': request.form.get('itemId'),
         'itemName': request.form.get('item'),
         'category': request.form.get('editCategory'),
+        'needsPair': request.form.get('needsPair'),
         'material': request.form.get('material')
     }
 

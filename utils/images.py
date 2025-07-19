@@ -49,3 +49,12 @@ def convertTifftoJpg(imagePath):
 def checkTypeAllowed(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def deleteImage(path):
+    fullPath = os.path.join(current_app.config['UPLOAD_FOLDER', path])
+    if os.path.exists(fullPath):
+        os.remove(fullPath)
+        return True
+    else:
+        return False
+    

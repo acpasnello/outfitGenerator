@@ -5,7 +5,8 @@ from random import randrange
 from flask import redirect, render_template, request, session, url_for
 from functools import wraps
 from werkzeug.utils import secure_filename
-from utils.db import dbInsert, dbSelect
+from utils.db import dbInsert, dbSelect, getItemImagePath
+from utils.images import deleteImage
 
 def login_required(f):
     @wraps(f)
@@ -53,9 +54,9 @@ def createItem(itemName, category, imagePath, userId, needsPair=1, material=''):
 
     return id
 
-def updateItem(itemId, itemName, category, material=''):
-    query = 'UPDATE clothing SET itemname = ?, category = ?, material = ? WHERE id = ?'
-    values = (itemName, category, material, itemId,)
+def updateItem(itemId, itemName, category, needsPair=1, material=''):
+    query = 'UPDATE clothing SET itemname = ?, category = ?, material = ?, needsPair = ? WHERE id = ?'
+    values = (itemName, category, material, needsPair, itemId,)
     dbInsert(query, values)
 
     return True
@@ -67,11 +68,16 @@ def updateItemImage(itemId, imagePath):
 
     return True
 
+def deleteItemImage(itemId):
+    path = getItemImagePath(itemId)
+    return deleteImage(path)
+
 def processItemUpdate(itemDetails, imagePath):
     # Need to only update fields that the user submitted new data for
     if imagePath:
+        deleteItemImage(itemDetails['id'])
         updateItemImage(itemDetails['id'], imagePath)
     
-    updateItem(itemDetails['id'], itemDetails['itemName'], itemDetails['category'], itemDetails['material'])
+    updateItem(itemDetails['id'], itemDetails['itemName'], itemDetails['category'], itemDetails['needsPair'], itemDetails['material'])
 
     return True

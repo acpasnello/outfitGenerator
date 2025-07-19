@@ -26,5 +26,9 @@ def dbSelect(query, values=None):
     else:
         data = cur.execute(query).fetchall()
     db.close()
-    
+
     return data
+
+def getItemImagePath(itemId):
+    path = dbSelect('SELECT imagePath FROM clothing WHERE id = ?', itemId)
+    return path

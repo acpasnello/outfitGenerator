@@ -225,6 +225,7 @@
       categoryDiv.append(categoryLabel, categorySelect)
 
       let needsPairLabel = createLabel()
+      needsPairLabel.classList.add('w-100')
       needsPairLabel.textContent = 'Is this item an outfit on its own?'
       let needsPairNoInput = createNeedsPairRadio()
       needsPairNoInput.setAttribute('value', '1')
@@ -232,7 +233,7 @@
       needsPairNoLabel.classList.add('form-check-label')
       needsPairNoLabel.textContent = 'No'
       let needsPairNoDiv = document.createElement('div')
-      needsPairNoDiv.classList.add('form-check-inline')
+      needsPairNoDiv.classList.add('form-check', 'form-check-inline')
       needsPairNoDiv.append(needsPairNoInput, needsPairNoLabel)
       let needsPairYesInput = createNeedsPairRadio()
       needsPairYesInput.setAttribute('value', '0')
@@ -240,7 +241,7 @@
       needsPairYesLabel.textContent = 'Yes'
       needsPairYesLabel.classList.add('form-check-label')
       let needsPairYesDiv = document.createElement('div')
-      needsPairYesDiv.classList.add('form-check-inline')
+      needsPairYesDiv.classList.add('form-check', 'form-check-inline')
       needsPairYesDiv.append(needsPairYesInput, needsPairYesLabel)
       let needsPairDiv = createFormPairDiv()
       console.log(item)
