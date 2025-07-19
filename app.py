@@ -188,7 +188,6 @@ def updateItem():
         'needsPair': request.form.get('needsPair'),
         'material': request.form.get('material')
     }
-
     processItemUpdate(itemDetails, path)
 
     return redirect(url_for('mycloset'))

@@ -29,6 +29,17 @@ def dbSelect(query, values=None):
 
     return data
 
+def dbSelectOne(query, values=None):
+    db = getDbConnection()
+    cur = db.cursor()
+    if values:
+        data = cur.execute(query, values).fetchone()
+    else:
+        data = cur.execute(query).fetchone()
+    db.close()
+
+    return data
+
 def getItemImagePath(itemId):
-    path = dbSelect('SELECT imagePath FROM clothing WHERE id = ?', itemId)
+    path = dbSelectOne('SELECT imagePath FROM clothing WHERE id = ?', (itemId,))['imagePath']
     return path

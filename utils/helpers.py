@@ -70,7 +70,8 @@ def updateItemImage(itemId, imagePath):
 
 def deleteItemImage(itemId):
     path = getItemImagePath(itemId)
-    return deleteImage(path)
+    deleted = deleteImage(path)
+    return deleted
 
 def processItemUpdate(itemDetails, imagePath):
     # Need to only update fields that the user submitted new data for

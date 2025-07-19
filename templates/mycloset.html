@@ -229,6 +229,7 @@
       needsPairLabel.textContent = 'Is this item an outfit on its own?'
       let needsPairNoInput = createNeedsPairRadio()
       needsPairNoInput.setAttribute('value', '1')
+      needsPairNoInput.setAttribute('name', 'needsPair')
       let needsPairNoLabel = document.createElement('label')
       needsPairNoLabel.classList.add('form-check-label')
       needsPairNoLabel.textContent = 'No'
@@ -237,6 +238,7 @@
       needsPairNoDiv.append(needsPairNoInput, needsPairNoLabel)
       let needsPairYesInput = createNeedsPairRadio()
       needsPairYesInput.setAttribute('value', '0')
+      needsPairYesInput.setAttribute('name', 'needsPair')
       let needsPairYesLabel = document.createElement('label')
       needsPairYesLabel.textContent = 'Yes'
       needsPairYesLabel.classList.add('form-check-label')
