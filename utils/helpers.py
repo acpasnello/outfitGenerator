@@ -21,7 +21,7 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
     while not (shoes and top and bottom):
         rand = randrange(len(items))
         if items[rand]['needsPair'] == 0 and not top and not bottom:
-            top = items['rand']
+            top = items[rand]
             bottom = top
             continue
         if items[rand]['category'] == 'Shoes' and not shoes:
@@ -32,10 +32,6 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
             continue
         if items[rand]['category'] == 'Bottom' and not bottom:
             bottom = items[rand]
-            continue
-        if items[rand]['category'] == 'Dress' and not top and not bottom:
-            top = items[rand]
-            bottom = top
             continue
 
     outfit = {
