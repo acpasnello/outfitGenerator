@@ -1,12 +1,21 @@
 {% extends "layout.html" %}
 
 {% macro outfitCard(item) %}
-  <div class="outfitItem">
-    <div class="outfitItemText">
-      {{item.itemname}}
+  <div class="outfitRow">
+    <div class="outfitItem">
+      <div class="outfitItemText">
+        {{item.itemname}}
+      </div>
+      <div class="outfitItemImage">
+        <img src="{{item.imagePath}}" alt="{{item.itemname}}" class="">
+      </div>
     </div>
-    <div class="outfitItemImage">
-      <img src="{{item.imagePath}}" alt="{{item.itemname}}" class="">
+    <div class="outfitItemLockDiv">
+      <button type="button" class="btn btn-outline-primary itemLockButton" data-state="unlocked" data-itemname="{{item.itemname}}" data-itemId="{{item.id}}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+        </svg>
+      </button>
     </div>
   </div>
 {%- endmacro %}
@@ -18,7 +27,9 @@
 {% block main %}
   <div>
     <h1>Wear this today</h1>
-    <a href="/" class="btn btn-outline-primary mb-2" role="button">Make another outfit</a>
+    <div class="btn-group mb-2" id="newOutfitButtonGroup">
+      <a href="/" class="btn btn-outline-primary" role="button" id="newOutfitButton">Make another outfit</a>
+    </div>
     <div class="outfitDisplay">
       {{ outfitCard(item1) }}
       {% if item2.id == item1.id %}
@@ -30,4 +41,51 @@
       {{ outfitCard(shoes) }}
     </div>
   </div>
+{% endblock %}
+
+{% block moreScripts %}
+  <script>
+    let unlockedSVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+    </svg>
+    `
+    let lockedSVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+    </svg>
+    `
+    let lockedItems = []
+    function handleLockClick(event) {
+      let lockButton = event.target
+      let buttonGroup = document.querySelector('#newOutfitButtonGroup')
+      
+      if (lockButton.getAttribute('data-state') == "unlocked") {
+        // Add button for generating outfit with locked item(s)
+        if (buttonGroup.childElementCount == 1) {
+          let newButton = document.createElement('a')
+          newButton.classList.add('btn', 'btn-outline-primary')
+          newButton.setAttribute('role', 'button')
+          newButton.innerText = 'Keep locked items'
+          buttonGroup.appendChild(newButton)
+        }
+        // Update clicked button
+        lockButton.innerHTML = lockedSVG
+        lockButton.dataset['state'] = 'locked'
+        // Add selected item to 
+        lockedItems.push()
+      } else {
+        lockButton.innerHTML = unlockedSVG
+        lockButton.dataset['state'] = 'unlocked'
+        if (lockedItems.length == 0) {
+          buttonGroup.lastChild.remove()
+        }
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.itemLockButton').forEach(lockButton => {
+        lockButton.addEventListener('click', handleLockClick)
+      })
+    })
+  </script>
 {% endblock %}

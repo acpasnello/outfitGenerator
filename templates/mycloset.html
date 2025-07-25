@@ -143,7 +143,7 @@
       item['category'] = card.querySelector('.itemCategory').textContent;
       item['itemMaterial'] = card.querySelector('.itemMaterial').textContent;
       item['needsPair'] = card.querySelector('.itemNeedsPair').textContent
-
+      
       return item
     }
     function createOption(value) {
@@ -152,9 +152,12 @@
       return option
     }
     // function that creates a select element with provided option value
-    function createSelectOption(value) {
+    function createSelectOption(value, selected = false) {
       let option = createOption(value)
       option.textContent = value
+      if (selected) {
+        option.setAttribute('selected','')
+      }
       return option
     }
     // function to create a div for a label and input pair
@@ -221,6 +224,8 @@
       {% for category in allcategories %}
         categorySelect.appendChild(createSelectOption('{{category}}'))
       {% endfor %}
+      let selectedCategory = categorySelect.querySelector(`[value='${item.category}']`)
+      selectedCategory.setAttribute('selected', '')
       let categoryDiv = createFormPairDiv()
       categoryDiv.append(categoryLabel, categorySelect)
 

@@ -30,18 +30,21 @@ Session(app)
 #     return response
 
 # Routes
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 @login_required
 def index():
-    # Get clothing
-    items = dbSelect('SELECT * FROM clothing WHERE userid = ?', (session['user_id'],))
-    # print(items)
-    if items and len(items) >= 3:
-        outfit = pickOutfit(items)
-        return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
+    if request.method == 'POST':
+        pass
     else:
-        # Had to redirect to closet if user had too few items
-        return redirect(url_for('mycloset'))
+        # Get clothing
+        items = dbSelect('SELECT * FROM clothing WHERE userid = ?', (session['user_id'],))
+        
+        if items and len(items) >= 3:
+            outfit = pickOutfit(items)
+            return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
+        else:
+            # Had to redirect to closet if user had too few items
+            return redirect(url_for('mycloset'))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
