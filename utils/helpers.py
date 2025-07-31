@@ -59,6 +59,13 @@ def processIndexRequestData(data):
         processed['Bottom'] = getItem(data['Bottom'])
     if 'Shoes' in data:
         processed['Shoes'] = getItem(data['Shoes'])
+    for key in data.keys():
+        if key not in processed.keys():
+            item = getItem(data[key])
+            if item['needsPair'] == 0:
+                print(item['category'])
+                processed['Top'] = item
+                processed['Bottom'] = processed['Top']
 
     return processed
     
