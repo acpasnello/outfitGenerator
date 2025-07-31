@@ -6,7 +6,7 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate
+from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate, processIndexRequestData
 from utils.images import processImageSubmission
 
 # When running from terminal: export FLASK_ENV=development
@@ -30,21 +30,26 @@ Session(app)
 #     return response
 
 # Routes
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/")
 @login_required
 def index():
-    if request.method == 'POST':
-        pass
+     # Get clothing
+    items = dbSelect('SELECT * FROM clothing WHERE userid = ?', (session['user_id'],))
+
+    if request.args:
+        print('args received')
+        data = request.args
+        print(data)
+        processedData = processIndexRequestData(data)
+        outfit = pickOutfit(items, processedData['Top'], processedData['Bottom'], processedData['Shoes'])
     else:
-        # Get clothing
-        items = dbSelect('SELECT * FROM clothing WHERE userid = ?', (session['user_id'],))
-        
         if items and len(items) >= 3:
             outfit = pickOutfit(items)
-            return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
         else:
             # Had to redirect to closet if user had too few items
             return redirect(url_for('mycloset'))
+    print('outfit: ', outfit)
+    return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

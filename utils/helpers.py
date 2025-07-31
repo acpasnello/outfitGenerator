@@ -39,9 +39,29 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
         'top': top,
         'bottom': bottom
     }
-    print(outfit)
+    print('outfit: picked', outfit)
     
     return outfit
+
+def getItem(itemId):
+    item = dbSelect('SELECT * FROM clothing WHERE id = ?', (itemId,))[0]
+    return item
+
+def processIndexRequestData(data):
+    processed = {
+        'Top': None,
+        'Bottom': None,
+        'Shoes': None
+    }
+    if 'Top' in data:
+        processed['Top'] = getItem(data['Top'])
+    if 'Bottom' in data:
+        processed['Bottom'] = getItem(data['Bottom'])
+    if 'Shoes' in data:
+        processed['Shoes'] = getItem(data['Shoes'])
+
+    return processed
+    
 
 def createItem(itemName, category, imagePath, userId, needsPair=1, material=''):
     query = 'INSERT INTO clothing (itemname, category, needsPair, imagePath, userId, material) VALUES (?, ?, ?, ?, ?, ?)'
