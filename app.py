@@ -6,7 +6,7 @@ from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate
+from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate, processIndexRequestData
 from utils.images import processImageSubmission
 
 # When running from terminal: export FLASK_ENV=development
@@ -33,15 +33,23 @@ Session(app)
 @app.route("/")
 @login_required
 def index():
-    # Get clothing
+     # Get clothing
     items = dbSelect('SELECT * FROM clothing WHERE userid = ?', (session['user_id'],))
-    # print(items)
-    if items and len(items) >= 3:
-        outfit = pickOutfit(items)
-        return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
+
+    if request.args:
+        print('args received')
+        data = request.args
+        print(data)
+        processedData = processIndexRequestData(data)
+        outfit = pickOutfit(items, processedData['Top'], processedData['Bottom'], processedData['Shoes'])
     else:
-        # Had to redirect to closet if user had too few items
-        return redirect(url_for('mycloset'))
+        if items and len(items) >= 3:
+            outfit = pickOutfit(items)
+        else:
+            # Had to redirect to closet if user had too few items
+            return redirect(url_for('mycloset'))
+    print('outfit: ', outfit)
+    return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -185,9 +193,9 @@ def updateItem():
         'id': request.form.get('itemId'),
         'itemName': request.form.get('item'),
         'category': request.form.get('editCategory'),
+        'needsPair': request.form.get('needsPair'),
         'material': request.form.get('material')
     }
-
     processItemUpdate(itemDetails, path)
 
     return redirect(url_for('mycloset'))

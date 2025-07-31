@@ -8,7 +8,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'avif'}
 def saveImage(file):
     # safely save image in file system
     filename = secure_filename(file.filename)
-    print(filename)
     file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
     # return full filepath to save in database
     return os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
@@ -49,3 +48,11 @@ def convertTifftoJpg(imagePath):
 def checkTypeAllowed(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def deleteImage(path):
+    if os.path.exists(path):
+        os.remove(path)
+        return True
+    else:
+        return False
+    
