@@ -5,7 +5,7 @@ from random import randrange
 from flask import redirect, render_template, request, session, url_for
 from functools import wraps
 from werkzeug.utils import secure_filename
-from utils.db import dbInsert, dbSelect, getItemImagePath
+from utils.db import dbInsert, dbSelect, getItemImagePath, dbDelete
 from utils.images import deleteImage
 
 def login_required(f):
@@ -39,7 +39,6 @@ def pickOutfit(items, top=None, bottom=None, shoes=None):
         'top': top,
         'bottom': bottom
     }
-    print('outfit: picked', outfit)
     
     return outfit
 
@@ -63,7 +62,6 @@ def processIndexRequestData(data):
         if key not in processed.keys():
             item = getItem(data[key])
             if item['needsPair'] == 0:
-                print(item['category'])
                 processed['Top'] = item
                 processed['Bottom'] = processed['Top']
 
@@ -105,3 +103,12 @@ def processItemUpdate(itemDetails, imagePath):
     updateItem(itemDetails['id'], itemDetails['itemName'], itemDetails['category'], itemDetails['needsPair'], itemDetails['material'])
 
     return True
+
+def processItemDeletion(itemId):
+    # Delete item's image
+    deleteItemImage(itemId)
+    # Delete item from db
+    rowCount = dbDelete('DELETE FROM clothing WHERE id = ?', (itemId,))
+    # Confirm item no longer exists in db
+    return rowCount == 1
+    
