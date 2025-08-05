@@ -40,6 +40,16 @@ def dbSelectOne(query, values=None):
 
     return data
 
+def dbDelete(query, values):
+    db = getDbConnection(False)
+    cur = db.cursor()
+    cur.execute(query, values)
+    rowCount = cur.rowcount
+    db.commit()
+    db.close()
+
+    return rowCount
+
 def getItemImagePath(itemId):
     path = dbSelectOne('SELECT imagePath FROM clothing WHERE id = ?', (itemId,))['imagePath']
     return path

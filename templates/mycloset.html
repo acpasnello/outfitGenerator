@@ -16,8 +16,8 @@
           </span>
         </button>
         <ul class="dropdown-menu">
-          <li><a href="#" class="dropdown-item editCardMenuOption">Edit Item</a></li>
-          <li><a href="#" class="dropdown-item deleteCardMenuOption">Delete Item</a></li>
+          <li><a class="dropdown-item editCardMenuOption" href="#">Edit Item</a></li>
+          <li><a class="dropdown-item deleteCardMenuOption" data-item-id="{{item.id}}" href="#">Delete Item</a></li>
         </ul>
       </div>
       {% if item.imagePath %}
@@ -101,12 +101,12 @@
           Is this item an outfit on its own?
         </div>
         <div class="form-check-inline">
-          <input class="form-check-input" type="radio" name="needsPair" id="needsPairYes" value="Y" autocomplete="off">
-          <label class="form-check-label" for="needsPairYes">Yes</label>
+          <input class="form-check-input" type="radio" name="needsPair" id="needsPairFalse" value="0" autocomplete="off">
+          <label class="form-check-label" for="needsPairFalse">Yes</label>
         </div>
         <div class="form-check-inline">
-          <input class="form-check-input" type="radio" name="needsPair" id="needsPairNo" value="N" checked autocomplete="off">
-          <label class="form-check-label" for="needsPairNo">No</label>
+          <input class="form-check-input" type="radio" name="needsPair" id="needsPairTrue" value="1" checked autocomplete="off">
+          <label class="form-check-label" for="needsPairTrue">No</label>
         </div>
         <a tabindex="0" class="formPopover" data-bs-toggle="popover" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="For example, select 'Yes' for a dress that you wear on its own. Select 'No' for pants that you need to wear a top with.">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
@@ -135,17 +135,18 @@
 
 {% block moreScripts %}
   <script>
-    // function that gets item details from card
+    // function that gets item details from card, based on the outermost div that makes the item card
     function getItemDetails(card) {
       let item = {} 
       item['itemId'] = card.querySelector('.itemId').textContent;
       item['itemName'] = card.querySelector('.itemName').textContent;
       item['category'] = card.querySelector('.itemCategory').textContent;
       item['itemMaterial'] = card.querySelector('.itemMaterial').textContent;
-      item['needsPair'] = card.querySelector('.itemNeedsPair').textContent
+      item['needsPair'] = card.querySelector('.itemNeedsPair').textContent;
       
       return item
     }
+    // Create <option> element with supplied value, for datalists and selects
     function createOption(value) {
       let option = document.createElement('option')
       option.setAttribute('value', value)
@@ -212,6 +213,7 @@
       itemNameInput.setAttribute('name', 'item')
       itemNameInput.setAttribute('id', 'editItemName')
       itemNameInput.setAttribute('value', item.itemName)
+      itemNameInput.autofocus = true
       let itemNameDiv = createFormPairDiv()
       itemNameDiv.append(itemNameLabel, itemNameInput)
 
@@ -232,32 +234,32 @@
       let needsPairLabel = createLabel()
       needsPairLabel.classList.add('w-100')
       needsPairLabel.textContent = 'Is this item an outfit on its own?'
-      let needsPairNoInput = createNeedsPairRadio()
-      needsPairNoInput.setAttribute('value', '1')
-      needsPairNoInput.setAttribute('name', 'needsPair')
-      let needsPairNoLabel = document.createElement('label')
-      needsPairNoLabel.classList.add('form-check-label')
-      needsPairNoLabel.textContent = 'No'
-      let needsPairNoDiv = document.createElement('div')
-      needsPairNoDiv.classList.add('form-check', 'form-check-inline')
-      needsPairNoDiv.append(needsPairNoInput, needsPairNoLabel)
-      let needsPairYesInput = createNeedsPairRadio()
-      needsPairYesInput.setAttribute('value', '0')
-      needsPairYesInput.setAttribute('name', 'needsPair')
-      let needsPairYesLabel = document.createElement('label')
-      needsPairYesLabel.textContent = 'Yes'
-      needsPairYesLabel.classList.add('form-check-label')
-      let needsPairYesDiv = document.createElement('div')
-      needsPairYesDiv.classList.add('form-check', 'form-check-inline')
-      needsPairYesDiv.append(needsPairYesInput, needsPairYesLabel)
+      let needsPairTrueInput = createNeedsPairRadio()
+      needsPairTrueInput.setAttribute('value', '1')
+      needsPairTrueInput.setAttribute('name', 'needsPair')
+      let needsPairTrueLabel = document.createElement('label')
+      needsPairTrueLabel.classList.add('form-check-label')
+      needsPairTrueLabel.textContent = 'No'
+      let needsPairTrueDiv = document.createElement('div')
+      needsPairTrueDiv.classList.add('form-check', 'form-check-inline')
+      needsPairTrueDiv.append(needsPairTrueInput, needsPairTrueLabel)
+      let needsPairFalseInput = createNeedsPairRadio()
+      needsPairFalseInput.setAttribute('value', '0')
+      needsPairFalseInput.setAttribute('name', 'needsPair')
+      let needsPairFalseLabel = document.createElement('label')
+      needsPairFalseLabel.textContent = 'Yes'
+      needsPairFalseLabel.classList.add('form-check-label')
+      let needsPairFalseDiv = document.createElement('div')
+      needsPairFalseDiv.classList.add('form-check', 'form-check-inline')
+      needsPairFalseDiv.append(needsPairFalseInput, needsPairFalseLabel)
       let needsPairDiv = createFormPairDiv()
       console.log(item)
       if (item.needsPair == 1) {
-        needsPairNoInput.setAttribute('checked', '')
+        needsPairTrueInput.setAttribute('checked', '')
       } else {
-        needsPairYesInput.setAttribute('checked', '')
+        needsPairFalseInput.setAttribute('checked', '')
       }
-      needsPairDiv.append(needsPairLabel, needsPairYesDiv, needsPairNoDiv)
+      needsPairDiv.append(needsPairLabel, needsPairFalseDiv, needsPairTrueDiv)
 
       let materialLabel = createLabel('editMaterial')
       materialLabel.textContent = 'Material'
@@ -324,7 +326,40 @@
       currentCard.insertAdjacentElement('afterend', newCard)
     }
 
+    // Create deletion confirmation popup within item card
+    function createDeletionPopup(itemId, deleteOption, currentCard) {
+      let popup = document.createElement('div')
+      popup.classList.add('deleteItemPopup')
+
+      let popupTextDiv = document.createElement('div')
+      let popupQuestion = document.createElement('p')
+      popupQuestion.innerText = "Are you sure you want to delete this item?\nThis cannot be undone!"
+      popupTextDiv.append(popupQuestion)
+
+      let cancelButton = document.createElement('button')
+      cancelButton.classList.add('btn', 'btn-secondary')
+      cancelButton.addEventListener('click', function() {
+        popup.remove()
+        deleteOption.addEventListener('click', deleteButtonHandler)
+      })
+      cancelButton.innerText = "Cancel"
+
+      let confirmButton = document.createElement('a')
+      confirmButton.setAttribute('role', 'button')
+      confirmButton.classList.add('btn', 'btn-danger')
+      confirmButton.innerText = "Delete"
+      confirmButton.setAttribute('href', `/deleteitem/${itemId}`)
+
+      let buttonDiv = document.createElement('div')
+      buttonDiv.classList.add('deletePopupButtonDiv')
+      buttonDiv.append(confirmButton, cancelButton)
+
+      popup.append(popupTextDiv, buttonDiv)
+      currentCard.append(popup)
+    }
+
     function editButtonHandler(event) {
+      event.preventDefault()
       let editButton = event.currentTarget
       let card = editButton.closest('.closetCard')
       let item = getItemDetails(card)
@@ -333,13 +368,25 @@
       editButton.removeEventListener('click', editButtonHandler)
     }
 
+    function deleteButtonHandler(e) {
+      e.preventDefault()
+      let deleteOption = e.target
+      let card = deleteOption.closest('.closetCard')
+      let itemId = deleteOption.dataset['itemId']
+
+      createDeletionPopup(itemId, deleteOption, card)
+      deleteOption.removeEventListener('click', deleteButtonHandler)
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
       document.querySelectorAll('.editCardMenuOption').forEach(editButton => {
         editButton.addEventListener('click', editButtonHandler)
       })
-
-      const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
-      const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+      document.querySelectorAll('.deleteCardMenuOption').forEach(deleteButton => {
+        deleteButton.addEventListener('click', deleteButtonHandler)
+      })
+      // const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+      // const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
     })
   </script>
 {% endblock %}
