@@ -9,8 +9,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate, processIndexRequestData, processItemDeletion
 from utils.images import processImageSubmission
 
-# When running from terminal: export FLASK_ENV=development
-
 # Configure application
 app = Flask(__name__)
 
@@ -20,14 +18,6 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 Session(app)
-
-# @app.after_request
-# def after_request(response):
-#     """Ensure responses aren't cached"""
-#     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-#     response.headers["Expires"] = 0
-#     response.headers["Pragma"] = "no-cache"
-#     return response
 
 # Routes
 @app.route("/")
@@ -105,8 +95,6 @@ def login():
         con = sqlite3.connect('outfits.db')
         con.row_factory = sqlite3.Row
         db = con.cursor()
-        #for row in db.execute('SELECT * FROM users WHERE username = ?', (request.form.get('username'),)):
-            #id, user, hash = row
         data = db.execute('SELECT * FROM users WHERE username = ?', (request.form.get('username'),))
         rows = data.fetchall()
         id = rows[0][0]
@@ -121,7 +109,6 @@ def login():
         if user != request.form.get('username') or not check_password_hash(hash, request.form.get('password')):
             # TODO: pop-up saying username taken
             return render_template('register.html')
-        # con.commit()
         con.close()
         # Remember which user has logged in
         session['user_id'] = id
