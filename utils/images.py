@@ -1,7 +1,7 @@
 import os
 from flask import current_app
 from werkzeug.utils import secure_filename
-from PIL import Image
+# from PIL import Image
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'avif'}
 
@@ -35,15 +35,15 @@ def checkImageType(filename):
         print('not allowed type')
         return False
     
-def convertTifftoJpg(imagePath):
-    f, e = os.path.splitext(imagePath)
-    outfile = f + '.jpg'
-    if imagePath != outfile:
-        try:
-            with Image.open(imagePath) as im:
-                im.save(outfile)
-        except OSError:
-            print("cannot convert", imagePath)
+# def convertTifftoJpg(imagePath):
+#     f, e = os.path.splitext(imagePath)
+#     outfile = f + '.jpg'
+#     if imagePath != outfile:
+#         try:
+#             with Image.open(imagePath) as im:
+#                 im.save(outfile)
+#         except OSError:
+#             print("cannot convert", imagePath)
 
 def checkTypeAllowed(filename):
     return '.' in filename and \
