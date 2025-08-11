@@ -95,6 +95,10 @@
     justify-content: space-around;
 }
 
+.closetNavTabs> li:last-child {
+    margin-left: auto;
+}
+
 @media screen and (min-width: 992px) {
     .outfitDisplay {
         max-width: 60%;

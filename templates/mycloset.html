@@ -37,7 +37,7 @@
 {%- endmacro %}
 
 {% block main %}
-  <ul class="nav nav-tabs" id="myTab" role="tablist">
+  <ul class="nav nav-tabs closetNavTabs" id="myTab" role="tablist">
     {% for item in usercategories %}
       {% if loop.first %}
         <li class="nav-item" role="presentation">
@@ -52,8 +52,11 @@
     <li class="nav-item" role="presentation">
       <button class="nav-link" id="All-tab" data-bs-toggle="tab" data-bs-target="#All" type="button" role="tab" aria-controls="All" aria-selected="false">All</button>
     </li>
+    <li>
+      <a href="#newItemFormContainer" role="button" class="btn btn-outline-primary">Create New Item</a>
+    </li>
   </ul>
-
+    
   <div class="tab-content" id="myTabContent">
     {% for category in usercategories %}
       {% if loop.first %}
@@ -80,7 +83,7 @@
   </div>
   {# {% block content %}
   {% endblock %} #}
-  <div class="border border-primary-subtle rounded p-3">
+  <div class="border border-primary-subtle rounded p-3" id="newItemFormContainer">
     <h6>Add a new item to your closet:</h6>
     <form action="/additem" method="POST" enctype="multipart/form-data" class="row g-3 text-start">
       <div class="col-md-4 col-lg-3">
