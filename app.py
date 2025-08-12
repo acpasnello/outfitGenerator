@@ -5,12 +5,16 @@ from flask import Flask, redirect, render_template, request, session, current_ap
 from flask_session import Session
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate, processIndexRequestData, processItemDeletion
 from utils.images import processImageSubmission
 
 # Configure application
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(
+    app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+)
 
 # Set configuration options
 app.config["TEMPLATES_AUTO_RELOAD"] = True
