@@ -7,7 +7,7 @@ from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate, processIndexRequestData, processItemDeletion
+from utils.helpers import login_required, pickOutfit, dbSelect, createItem, processItemUpdate, processIndexRequestData, processItemDeletion, processRegistration
 from utils.images import processImageSubmission
 
 # Configure application
@@ -42,7 +42,7 @@ def index():
             return redirect(url_for('mycloset'))
     return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
 
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
 
@@ -60,22 +60,17 @@ def register():
             # TODO: pop-up saying passwords do not match
             return render_template('register.html')
 
-        # Check username not taken
-        con = sqlite3.connect('outfits.db')
-        db = con.cursor()
-        data = db.execute('SELECT * FROM users WHERE username = ?', (request.form.get('username'),))
-        rows = data.fetchall()
-
-        if not len(rows) == 0:
-            # TODO: pop-up saying username taken
-            return render_template('register.html')
-
         # Store new user in Database
         username = request.form.get('username')
         passwordHash = generate_password_hash(request.form.get('password'), method='scrypt:32768:8:1', salt_length=16)
-        db.execute('INSERT INTO users (username, hash) VALUES (?, ?)', (username, passwordHash))
-        con.commit()
-        con.close()
+        attempt = processRegistration(username, passwordHash)
+        if attempt['success'] == False:
+            # TODO: pop-up saying username taken
+            return render_template('register.html')
+        elif attempt['success'] == True:
+            session['user_id'] = attempt['id']
+            session['username'] = attempt['username']
+        
         return redirect(url_for('index'))
     else:
         return render_template('register.html')

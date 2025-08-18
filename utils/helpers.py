@@ -111,4 +111,15 @@ def processItemDeletion(itemId):
     rowCount = dbDelete('DELETE FROM clothing WHERE id = ?', (itemId,))
     # Confirm item no longer exists in db
     return rowCount == 1
+
+def processRegistration(username, hash):
+    # Check username isn't taken
+    row = dbSelect('SELECT * FROM users WHERE username = ?', (username,))
+    if not len(row) == 0:
+        return {'success': False}
+    
+    # Save new user
+    userId = dbInsert('INSERT INTO users (username, hash) VALUES (?, ?)', (username, hash,))
+    
+    return {'success': True, 'id': userId, 'username': username}
     
