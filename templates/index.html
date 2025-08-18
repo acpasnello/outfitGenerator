@@ -28,7 +28,7 @@
   <div>
     <h1>Wear this today</h1>
     <div class="btn-group mb-2" id="newOutfitButtonGroup">
-      <a href="/" class="btn btn-outline-primary" role="button" id="newOutfitButton">Make another outfit</a>
+      <a href="{{ url_for('index') }}" class="btn btn-outline-primary" role="button" id="newOutfitButton">Make another outfit</a>
     </div>
     <div class="outfitDisplay">
       {{ outfitCard(item1) }}

@@ -42,7 +42,7 @@ def index():
             return redirect(url_for('mycloset'))
     return render_template('index.html', item1=outfit['top'], item2=outfit['bottom'], shoes=outfit['shoes'])
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["POST"])
 def register():
     if request.method == "POST":
 
@@ -76,7 +76,7 @@ def register():
         db.execute('INSERT INTO users (username, hash) VALUES (?, ?)', (username, passwordHash))
         con.commit()
         con.close()
-        return render_template('index.html')
+        return redirect(url_for('index'))
     else:
         return render_template('register.html')
 
@@ -107,8 +107,8 @@ def login():
         print(id, user)
         # Ensure username exists and password is correct
         if user == None:
-            print('user=none')
-            return render_template('login.html')
+            # Add message that username not found
+            return redirect(url_for('login'))
 
         if user != request.form.get('username') or not check_password_hash(hash, request.form.get('password')):
             # TODO: pop-up saying username taken
