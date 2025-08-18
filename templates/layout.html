@@ -12,7 +12,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand border">
-      <a class="navbar-brand h1 mb-0 ms-3" href="/">
+      <a class="navbar-brand h1 mb-0 ms-3" href="{{ url_for('index') }}">
         {% if session["username"] %}
           {{ session["username"] }}'s
         {% else %}
@@ -22,7 +22,7 @@
       </a>
       <ul class="navbar-nav nav-underline me-auto mt-2">
         <li class="nav-item">
-          <a {% block navIndexClass %}class="nav-link"{% endblock %} href="/">Home</a>
+          <a {% block navIndexClass %}class="nav-link"{% endblock %} href="{{ url_for('index') }}">Home</a>
         </li>
         <li class="nav-item">
           <a {% block navClosetClass %}class="nav-link"{% endblock %} href="{{ url_for('mycloset') }}">My Closet</a>
