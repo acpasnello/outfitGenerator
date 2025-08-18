@@ -6,3 +6,4 @@ flask_session/
 uploads
 .DS_Store
 venv
+.venv
