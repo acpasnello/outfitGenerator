@@ -45,28 +45,42 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-
         # Check required fields filled out
         if not request.form.get('username'):
-            # TODO: pop-up saying must enter username
-            return render_template('register.html')
+            messages = [{
+                'text': 'Please enter a username.',
+                'class': 'danger'
+            }]
+            return render_template('register.html', messages=messages)
         if not request.form.get('password'):
-            # TODO: pop-up saying must enter password
-            return render_template('register.html')
+            messages = [{
+                'text': 'Password required.',
+                'class': 'danger'
+            }]
+            return render_template('register.html', messages=messages)
         if not request.form.get('confirmation'):
-            # TODO: pop-up saying must re-enter password
-            return render_template('register.html')
+            messages = [{
+                'text': 'Password confirmation required.',
+                'class': 'danger'
+            }]
+            return render_template('register.html', messages=messages)
         if not request.form.get('password') == request.form.get('confirmation'):
-            # TODO: pop-up saying passwords do not match
-            return render_template('register.html')
+            messages = [{
+                'text': 'Password and confirmation must match',
+                'class': 'warning'
+            }]
+            return render_template('register.html', messages=messages)
 
         # Store new user in Database
         username = request.form.get('username')
         passwordHash = generate_password_hash(request.form.get('password'), method='scrypt:32768:8:1', salt_length=16)
         attempt = processRegistration(username, passwordHash)
         if attempt['success'] == False:
-            # TODO: pop-up saying username taken
-            return render_template('register.html')
+            messages = [{
+                'text': 'Username taken',
+                'class': 'danger'
+                }]
+            return render_template('register.html', messages=messages)
         elif attempt['success'] == True:
             session['user_id'] = attempt['id']
             session['username'] = attempt['username']

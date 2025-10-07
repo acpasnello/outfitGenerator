@@ -40,6 +40,15 @@
       </ul>
     </nav>
     <main class="container-fluid py-3 text-center">
+      {% block messages %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="messagesDiv alert alert-{% if message.class %}{{ message.class }}{% else %}danger{% endif %}" role="alert">
+              {{ message.text }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endblock %}
       {% block main %}
       {% endblock %}
     </main>
